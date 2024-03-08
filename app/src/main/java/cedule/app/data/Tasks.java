@@ -15,22 +15,22 @@ import androidx.room.PrimaryKey;
 ))
 public class Tasks {
     @PrimaryKey
-    Integer id;
+    public Integer id;
 
-    Integer category;
+    public Integer category;
 
     @NonNull
-    Integer createdDate;
-    Integer deadline;
+    public Integer createdDate;
+    public Integer deadline;
 
     @ColumnInfo(defaultValue = "1")
-    Integer severity;
+    public Integer severity;
 
     @NonNull
-    String title;
+    public String title;
 
-    String message;
+    public String message;
 
     @ColumnInfo(defaultValue = "0")
-    Integer isCompleted;
+    public Integer isCompleted;
 }

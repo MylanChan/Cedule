@@ -19,8 +19,8 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
+        // Context of the app.db under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("cedule.app", appContext.getPackageName());
+        assertEquals("cedule.app.db", appContext.getPackageName());
     }
 }
