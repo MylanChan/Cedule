@@ -3,19 +3,26 @@ package cedule.app.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
 import cedule.app.R;
+import cedule.app.data.Database;
 import cedule.app.fragments.CalendarFragment;
 import cedule.app.fragments.TaskFragment;
 import cedule.app.fragments.WidgetsFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private Database database;
+
+    public Database getDatabase() {
+        return database;
+    }
+
     private void switchFragment(View view, Class<? extends Fragment> destFragment) {
 
 
@@ -38,9 +45,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (database != null) database.close();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = Room.databaseBuilder(this, Database.class, "app.db")
+                .createFromAsset("app.db")
+                .build();
 
         findViewById(R.id.iv_task)
                 .setOnClickListener(v -> switchFragment(v, TaskFragment.class));
