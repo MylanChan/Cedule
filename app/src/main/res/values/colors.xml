@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#E6E6E6</color>
+    <color name="onPrimary">#262626</color>
+    <color name="onPrimaryVariant">#A5A5A5</color>
+
+    <color name="surface">#FBFBFB</color>
+    <color name="onSurface">#E6E6E6</color>
+    <color name="onSurfaceVariant">#A5A5A5</color>
 </resources>
