@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void switchFragment(View view, Class<? extends Fragment> destFragment) {
-
-
         for (int id : new int[] {R.id.iv_task, R.id.iv_calendar, R.id.iv_widgets}) {
             ImageView navItem = findViewById(id);
 

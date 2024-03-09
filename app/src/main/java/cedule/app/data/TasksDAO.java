@@ -25,4 +25,7 @@ public interface TasksDAO {
 
     @Query("UPDATE tasks SET isCompleted=:isCompleted WHERE id=:id")
     void updateTaskStatus(Integer id, Integer isCompleted);
+
+    @Query("SELECT * FROM tasks ORDER BY id DESC LIMIT 1")
+    List<Tasks> getLastTask();
 }

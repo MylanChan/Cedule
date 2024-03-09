@@ -1,6 +1,8 @@
 package cedule.app.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -14,14 +16,16 @@ import cedule.app.data.Database;
 import cedule.app.data.Tasks;
 
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    List<Tasks> tasksList = null;
+    private final MainActivity activity;
+    private List<Tasks> tasksList = null;
 
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.viewholder_task, parent, false);
 
-        return new TaskViewHolder(inflater.inflate(R.layout.viewholder_task, parent, false));
+        return new TaskViewHolder(activity, view);
     }
 
     @Override
@@ -34,18 +38,26 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return tasksList == null ? 0 : tasksList.size();
     }
 
+    public void addTask(Tasks task) {
+        if (tasksList == null) return;
+        tasksList.add(task);
+
+        notifyItemChanged(tasksList.size()-1);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private void setTaskList(List<Tasks> tasks) {
         tasksList = tasks;
         notifyDataSetChanged();
     }
 
     public TaskAdapter(MainActivity activity) {
-        Database database = activity.getDatabase();
+        this.activity = activity;
+
         new Thread(() -> {
-            List<Tasks> tasks = database.tasksDAO().getAllTasks();
-            activity.runOnUiThread(() -> {
-                setTaskList(tasks);
-            });
+            List<Tasks> tasks = activity.getDatabase().tasksDAO().getAllTasks();
+            
+            activity.runOnUiThread(() -> setTaskList(tasks));
         }).start();
     }
 }

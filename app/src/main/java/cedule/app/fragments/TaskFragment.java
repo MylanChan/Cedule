@@ -11,20 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
 import cedule.app.adapters.TaskAdapter;
+import cedule.app.data.Database;
+import cedule.app.data.Tasks;
 import cedule.app.dialogs.AddTaskDialog;
 
 public class TaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
-        ((RecyclerView) view.findViewById(R.id.rv_tasks))
-                .setLayoutManager(new LinearLayoutManager(requireActivity()));
 
-        ((RecyclerView) view.findViewById(R.id.rv_tasks))
-                .setAdapter(new TaskAdapter((MainActivity) requireActivity()));
+        RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
+        rvTasks.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        rvTasks.setAdapter(new TaskAdapter((MainActivity) requireActivity()));
 
         view.findViewById(R.id.btn_add).setOnClickListener(v -> {
             new AddTaskDialog().show(getParentFragmentManager(), null);
