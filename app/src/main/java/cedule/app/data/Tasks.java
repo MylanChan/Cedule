@@ -19,7 +19,6 @@ public class Tasks {
 
     public Integer category;
 
-    @NonNull
     public Integer createdDate;
     public Integer deadline;
 
