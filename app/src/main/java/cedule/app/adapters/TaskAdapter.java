@@ -1,6 +1,5 @@
 package cedule.app.adapters;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,28 +15,73 @@ import cedule.app.activities.MainActivity;
 import cedule.app.data.Tasks;
 
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Tasks> tasksList = null;
-    private static final List<Integer> selectedTasks = new ArrayList<>();
+    private final List<Tasks> tasksList;
+    private final List<Integer> selectedTasks = new ArrayList<>();
+    private final View container;
 
     public final static int MODE_NORMAL = 0;
     public final static int MODE_SELECT = 1;
-    private static int mode = MODE_NORMAL;
+    private int mode = MODE_NORMAL;
 
-    public static void setMode(int modeNumber) {
-        mode = modeNumber;
+    private void setNormalModeStyles() {
+        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
+        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
+        container.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
     }
-    public static int getMode() {
+
+    private void setSelectModeStyles() {
+        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.GONE);
+        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.VISIBLE);
+        container.findViewById(R.id.btn_add).setVisibility(View.GONE);
+    }
+
+    public void discardSelectedTasks() {
+        List<Integer> idList = new ArrayList<>();
+        for (int i : selectedTasks) {
+            idList.add(tasksList.get(i).id);
+            tasksList.remove(i);
+            notifyItemRemoved(i);
+        }
+        selectedTasks.clear();
+
+        setNormalModeStyles();
+
+        new Thread(() -> {
+            MainActivity.getDatabase().tasksDAO().discardTasks(idList);
+        }).start();
+    }
+
+    public int getMode() {
         return mode;
     }
 
-    public static void selectTask(Integer adapterPosition) {
-        selectedTasks.add(adapterPosition);
-        if (getMode() == MODE_NORMAL) setMode(MODE_SELECT);
+    public void setMode(int modeNumber) {
+        mode = modeNumber;
+
+        if (mode == MODE_NORMAL) {
+            setNormalModeStyles();
+        }
+        else if (mode == MODE_SELECT) {
+            setSelectModeStyles();
+        }
     }
 
-    public static void unselectTask(Integer adapterPosition) {
+    public void selectTask(Integer adapterPosition) {
+        selectedTasks.add(adapterPosition);
+        if (mode == MODE_NORMAL) setMode(MODE_SELECT);
+    }
+
+    public void unselectTask(Integer adapterPosition) {
         selectedTasks.remove(adapterPosition);
         if (selectedTasks.size() == 0) setMode(MODE_NORMAL);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+
+        // show the add button which may be gone if adapter is in selecting mode
+        container.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
     }
 
     @Override @NonNull
@@ -45,7 +89,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.viewholder_task, parent, false);
 
-        return new TaskViewHolder(view);
+        return new TaskViewHolder(this, view);
     }
 
     @Override
@@ -65,13 +109,8 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemChanged(tasksList.size()-1);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void setTaskList(List<Tasks> tasks) {
+    public TaskAdapter(View container, List<Tasks> tasks) {
+        this.container = container;
         tasksList = tasks;
-        notifyDataSetChanged();
-    }
-
-    public TaskAdapter(List<Tasks> tasks) {
-        setTaskList(tasks);
     }
 }

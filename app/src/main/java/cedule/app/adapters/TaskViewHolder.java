@@ -3,14 +3,9 @@ package cedule.app.adapters;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cedule.app.R;
@@ -19,9 +14,10 @@ import cedule.app.data.Tasks;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
     private final View view;
+    private final TaskAdapter adapter;
 
-    private final int STATUS_NORMAL = 0;
-    private final int STATUS_SELECTED = 1;
+    private static final int STATUS_NORMAL = 0;
+    private static final int STATUS_SELECTED = 1;
     private int status = STATUS_NORMAL;
 
     private Tasks task;
@@ -42,14 +38,14 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     private void selectTask() {
         status = STATUS_SELECTED;
         view.setBackgroundColor(Color.parseColor("#AAE6E6E6"));
-        TaskAdapter.selectTask(getAdapterPosition() - 1);
+        adapter.selectTask(getAdapterPosition());
     }
 
     private void unselectTask() {
         // transparent color
         status = STATUS_NORMAL;
         view.setBackgroundColor(Color.parseColor("#00000000"));
-        TaskAdapter.unselectTask(getAdapterPosition() - 1);
+        adapter.unselectTask(getAdapterPosition());
     }
 
     private void toggleStatus(Boolean isChecked) {
@@ -89,10 +85,10 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void handleOnClickItem() {
-        if (TaskAdapter.getMode() == TaskAdapter.MODE_NORMAL) {
+        if (adapter.getMode() == TaskAdapter.MODE_NORMAL) {
             updateIsTaskCompleted();
         }
-        else if (TaskAdapter.getMode() == TaskAdapter.MODE_SELECT){
+        else if (adapter.getMode() == TaskAdapter.MODE_SELECT){
             if (status == STATUS_NORMAL) {
                 selectTask();
             }
@@ -102,8 +98,9 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public TaskViewHolder(View view) {
+    public TaskViewHolder(TaskAdapter adapter, View view) {
         super(view);
+        this.adapter = adapter;
         this.view = view;
 
         view.findViewById(R.id.cl_item)
@@ -114,7 +111,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
         CheckBox checkBox = view.findViewById(R.id.cb_input);
         checkBox.setOnCheckedChangeListener((v, isChecked) -> {
-            if (TaskAdapter.getMode() == TaskAdapter.MODE_SELECT) {
+            if (adapter.getMode() == TaskAdapter.MODE_SELECT) {
                 v.setChecked(!isChecked);
                 return;
             }

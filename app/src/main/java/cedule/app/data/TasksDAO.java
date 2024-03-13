@@ -20,8 +20,8 @@ public interface TasksDAO {
             "VALUES (:cat, :deadline, :severity, :title, :message)")
     void addTask(Integer cat, Integer deadline, Integer severity, String title, String message);
 
-    @Query("DELETE FROM tasks WHERE id=:id")
-    void removeTask(Integer id);
+    @Query("DELETE FROM tasks WHERE id IN (:id)")
+    void discardTasks(List<Integer> id);
 
     @Query("UPDATE tasks SET isCompleted=:isCompleted WHERE id=:id")
     void updateTaskStatus(Integer id, Integer isCompleted);

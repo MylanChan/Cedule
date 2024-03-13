@@ -2,22 +2,16 @@ package cedule.app.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
@@ -29,9 +23,43 @@ import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
 import cedule.app.dialogs.AddTaskDialog;
+import cedule.app.dialogs.ConfirmationDialog;
 
 public class TaskFragment extends Fragment {
     private View view;
+
+    private void handleOnClickSort(View v) {
+        PopupMenu menu = new PopupMenu(requireActivity(), v);
+        menu.getMenuInflater().inflate(R.menu.menu_sort, menu.getMenu());
+        menu.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.item_sort_az) {
+
+            }
+            else if (itemId == R.id.item_sort_za) {
+
+            }
+            else if (itemId == R.id.item_sort_deadline) {
+
+            }
+            else if (itemId == R.id.item_sort_default) {
+                // sort by id
+            }
+            return true;
+        });
+
+        menu.show();
+    }
+    private void handleOnClickDiscard() {
+        RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
+
+        new ConfirmationDialog("Discard all selected tasks?", (dialog) -> {
+            TaskAdapter adapter = (TaskAdapter) rvTasks.getAdapter();
+
+            if (adapter != null) adapter.discardSelectedTasks();
+            dialog.dismiss();
+        }).show(getParentFragmentManager(), null);
+    }
 
     private void setTabWidth(int pos, float width) {
         TabLayout tlTasks = view.findViewById(R.id.tl_tasks);
@@ -62,12 +90,12 @@ public class TaskFragment extends Fragment {
             if (category.size() > 0) {
                 List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.get(0).id);
                 requireActivity().runOnUiThread(() -> {
-                    rvTasks.setAdapter(new TaskAdapter(tasks));
+                    rvTasks.setAdapter(new TaskAdapter(view, tasks));
                 });
                 return;
             }
             requireActivity().runOnUiThread(() -> {
-                rvTasks.setAdapter(new TaskAdapter(null));
+                rvTasks.setAdapter(null);
             });
         }).start();
     }
@@ -89,7 +117,7 @@ public class TaskFragment extends Fragment {
                         new Thread(() -> {
                             List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
                             requireActivity().runOnUiThread(() -> {
-                                rvTasks.setAdapter(new TaskAdapter(tasks));
+                                rvTasks.setAdapter(new TaskAdapter(view, tasks));
                             });
                         }).start();
                         return;
@@ -114,15 +142,13 @@ public class TaskFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         view = inflater.inflate(R.layout.fragment_task, container, false);
 
+        RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
+        rvTasks.setLayoutManager(new LinearLayoutManager(requireActivity()));
+
         new Thread(() -> {
             List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
 
-            requireActivity().runOnUiThread(() -> {
-                RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
-                rvTasks.setLayoutManager(new LinearLayoutManager(requireActivity()));
-
-                rvTasks.setAdapter(new TaskAdapter(tasks));
-            });
+            requireActivity().runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(view, tasks)));
         }).start();
 
         view.findViewById(R.id.btn_add).setOnClickListener(v -> {
@@ -131,35 +157,13 @@ public class TaskFragment extends Fragment {
 
         TabLayout tlTasks = view.findViewById(R.id.tl_tasks);
         tlTasks.getTabAt(0).setIcon(R.drawable.ic_focus);
-
-        initialOnTabSelectedListener();
+        tlTasks.getTabAt(1).select();
 
         setTabWidth(0, 0.5f);
+        initialOnTabSelectedListener();
 
-        ((TabLayout) view.findViewById(R.id.tl_tasks)).getTabAt(1).select();
-
-        view.findViewById(R.id.ib_sort).setOnClickListener(v -> {
-            PopupMenu menu = new PopupMenu(requireActivity(), v);
-            menu.getMenuInflater().inflate(R.menu.menu_sort, menu.getMenu());
-            menu.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.item_sort_az) {
-
-                }
-                else if (itemId == R.id.item_sort_za) {
-
-                }
-                else if (itemId == R.id.item_sort_deadline) {
-
-                }
-                else if (itemId == R.id.item_sort_default) {
-                    // sort by id
-                }
-                return true;
-            });
-
-            menu.show();
-        });
+        view.findViewById(R.id.ib_sort).setOnClickListener(this::handleOnClickSort);
+        view.findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
 
         return view;
     }
