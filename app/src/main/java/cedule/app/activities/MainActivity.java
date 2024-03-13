@@ -37,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
             navItem.setImageTintList(ColorStateList.valueOf(onPrimaryVariant));
         }
 
+        if (getSupportFragmentManager().findFragmentById(R.id.fr_app_main).getClass() == destFragment) {
+            return;
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fr_app_main, destFragment, null)
                 .commit();
