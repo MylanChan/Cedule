@@ -39,7 +39,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <LinearLayout
-        android:id="@+id/ll_app_tools"
+        android:id="@+id/ll_ribbon"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
@@ -51,21 +51,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tl_tasks">
 
-        <ImageButton
-            android:id="@+id/ib_filter"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
+        <LinearLayout
+            android:id="@+id/ll_ribbon_normal"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#00FFFFFF"
-            app:srcCompat="@drawable/ic_filter" />
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/ib_sort"
+            <ImageButton
+                android:id="@+id/ib_filter"
+                style="@android:style/Widget.DeviceDefault.ImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#00FFFFFF"
+                app:srcCompat="@drawable/ic_filter" />
+
+            <ImageButton
+                android:id="@+id/ib_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="#00FFFFFF"
+                app:srcCompat="@drawable/ic_sort" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_ribbon_select"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:backgroundTint="#00FFFFFF"
-            app:srcCompat="@drawable/ic_sort" />
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageButton
+                android:id="@+id/ib_more"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="8dp"
+                android:background="#00000000"
+                app:srcCompat="@drawable/ic_more_vert" />
+
+            <ImageButton
+                android:id="@+id/ib_trash"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="#00000000"
+                app:srcCompat="@drawable/ic_trash" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -75,7 +106,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ll_app_tools">
+        app:layout_constraintTop_toBottomOf="@+id/ll_ribbon">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_tasks"

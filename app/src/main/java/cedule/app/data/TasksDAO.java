@@ -28,4 +28,7 @@ public interface TasksDAO {
 
     @Query("SELECT * FROM tasks ORDER BY id DESC LIMIT 1")
     List<Tasks> getLastTask();
+
+    @Query("SELECT * FROM categories WHERE name=:name LIMIT 1")
+    List<Categories> getCategoryIdByName(String name);
 }

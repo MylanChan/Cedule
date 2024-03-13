@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "categories")
 public class Categories {
     @PrimaryKey
-    Integer id;
+    public Integer id;
 
     @NonNull
-    String name;
+    public String name;
 }
