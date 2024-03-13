@@ -18,16 +18,38 @@ import cedule.app.activities.MainActivity;
 import cedule.app.data.Tasks;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
-    private MainActivity activity;
-    final View view;
+    private final View view;
 
-    final private int STATUS_NORMAL = 0;
-    final private int STATUS_SELECTED = 1;
+    private final int STATUS_NORMAL = 0;
+    private final int STATUS_SELECTED = 1;
     private int status = STATUS_NORMAL;
 
     private Tasks task;
     private Tasks getTask() {
         return task;
+    }
+
+    private void updateIsTaskCompleted() {
+        CheckBox checkBox = view.findViewById(R.id.cb_input);
+        checkBox.setChecked(!checkBox.isChecked());
+
+        new Thread(() -> {
+            MainActivity.getDatabase().tasksDAO()
+                    .updateTaskStatus(getTask().id, checkBox.isChecked() ? 1 : 0);
+        }).start();
+    }
+
+    private void selectTask() {
+        status = STATUS_SELECTED;
+        view.setBackgroundColor(Color.parseColor("#AAE6E6E6"));
+        TaskAdapter.selectTask(getAdapterPosition() - 1);
+    }
+
+    private void unselectTask() {
+        // transparent color
+        status = STATUS_NORMAL;
+        view.setBackgroundColor(Color.parseColor("#00000000"));
+        TaskAdapter.unselectTask(getAdapterPosition() - 1);
     }
 
     private void toggleStatus(Boolean isChecked) {
@@ -58,30 +80,30 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     private Boolean handleOnLongClickItem(View view) {
         // long click -> select the item or cancel its selection
         if (status == STATUS_NORMAL) {
-            view.setBackgroundColor(Color.parseColor("#AAE6E6E6"));
-            status = STATUS_SELECTED;
+            selectTask();
         }
         else if (status == STATUS_SELECTED) {
-            // transparent background
-            view.setBackgroundColor(Color.parseColor("#00000000"));
-            status = STATUS_NORMAL;
+            unselectTask();
         }
         return true;
     }
 
     private void handleOnClickItem() {
-        CheckBox checkBox = view.findViewById(R.id.cb_input);
-        checkBox.setChecked(!checkBox.isChecked());
-
-        new Thread(() -> {
-            activity.getDatabase().tasksDAO()
-                    .updateTaskStatus(getTask().id, checkBox.isChecked() ? 1 : 0);
-        }).start();
+        if (TaskAdapter.getMode() == TaskAdapter.MODE_NORMAL) {
+            updateIsTaskCompleted();
+        }
+        else if (TaskAdapter.getMode() == TaskAdapter.MODE_SELECT){
+            if (status == STATUS_NORMAL) {
+                selectTask();
+            }
+            else if (status == STATUS_SELECTED) {
+                unselectTask();
+            }
+        }
     }
 
-    public TaskViewHolder(MainActivity activity, View view) {
+    public TaskViewHolder(View view) {
         super(view);
-        this.activity = activity;
         this.view = view;
 
         view.findViewById(R.id.cl_item)
@@ -91,7 +113,13 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
                 .setOnLongClickListener(this::handleOnLongClickItem);
 
         CheckBox checkBox = view.findViewById(R.id.cb_input);
-        checkBox.setOnCheckedChangeListener((v, isChecked) -> toggleStatus(isChecked));
+        checkBox.setOnCheckedChangeListener((v, isChecked) -> {
+            if (TaskAdapter.getMode() == TaskAdapter.MODE_SELECT) {
+                v.setChecked(!isChecked);
+                return;
+            }
+            toggleStatus(isChecked);
+        });
 
         toggleStatus(checkBox.isChecked());
     }

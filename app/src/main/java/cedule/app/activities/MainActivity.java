@@ -17,9 +17,9 @@ import cedule.app.fragments.TaskFragment;
 import cedule.app.fragments.WidgetsFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private Database database;
+    private static Database database;
 
-    public Database getDatabase() {
+    public static Database getDatabase() {
         return database;
     }
 

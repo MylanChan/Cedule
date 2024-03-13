@@ -14,22 +14,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
+
 import cedule.app.R;
 import cedule.app.activities.FocusActivity;
 import cedule.app.activities.MainActivity;
 import cedule.app.adapters.TaskAdapter;
+import cedule.app.data.Tasks;
 import cedule.app.dialogs.AddTaskDialog;
 
 public class TaskFragment extends Fragment {
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.fragment_task, container, false);
 
-        RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
-        rvTasks.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        rvTasks.setAdapter(new TaskAdapter((MainActivity) requireActivity()));
+        new Thread(() -> {
+            List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+
+            requireActivity().runOnUiThread(() -> {
+                RecyclerView rvTasks = view.findViewById(R.id.rv_tasks);
+                rvTasks.setLayoutManager(new LinearLayoutManager(requireActivity()));
+
+                rvTasks.setAdapter(new TaskAdapter(tasks));
+            });
+        }).start();
 
         view.findViewById(R.id.btn_add).setOnClickListener(v -> {
             new AddTaskDialog().show(getParentFragmentManager(), null);
