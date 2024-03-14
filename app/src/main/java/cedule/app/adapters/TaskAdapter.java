@@ -1,5 +1,6 @@
 package cedule.app.adapters;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cedule.app.R;
@@ -17,6 +19,8 @@ import cedule.app.data.Tasks;
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Tasks> tasksList;
     private final List<Integer> selectedTasks = new ArrayList<>();
+    private final List<TaskViewHolder> viewHolders = new ArrayList<>();
+
     private final View container;
 
     public final static int MODE_NORMAL = 0;
@@ -36,17 +40,23 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void discardSelectedTasks() {
-        List<Integer> idList = new ArrayList<>();
-        for (int i : selectedTasks) {
-            idList.add(tasksList.get(i).id);
-            tasksList.remove(i);
-            notifyItemRemoved(i);
+        List<Tasks> discardTasks = new ArrayList<>();
+
+        for (int adapterPos : selectedTasks) {
+            discardTasks.add(tasksList.get(adapterPos));
         }
+
+        tasksList.removeAll(discardTasks);
         selectedTasks.clear();
 
+        notifyDataSetChanged();
         setNormalModeStyles();
 
         new Thread(() -> {
+            List<Integer> idList = new ArrayList<>();
+            for (Tasks task : discardTasks) {
+                idList.add(task.id);
+            }
             MainActivity.getDatabase().tasksDAO().discardTasks(idList);
         }).start();
     }
@@ -77,11 +87,24 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+
+        // After discarding tasks, their ViewHolder will reuse later on if has new task
+        // They are in select mode before the discard
+        // Thus, it needs to change back the status and style same as normal mode
+        ((TaskViewHolder) holder).initialize();
+    }
+
+    @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
 
-        // show the add button which may be gone if adapter is in selecting mode
+        // some elements are shared with different Tabs
+        // and they may be hid if adapter is in select mode
         container.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
+        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
+        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
     }
 
     @Override @NonNull
@@ -89,7 +112,9 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.viewholder_task, parent, false);
 
-        return new TaskViewHolder(this, view);
+        TaskViewHolder viewHolder = new TaskViewHolder(this, view);
+        viewHolders.add(viewHolder);
+        return viewHolder;
     }
 
     @Override
