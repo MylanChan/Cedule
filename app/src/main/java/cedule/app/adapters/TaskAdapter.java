@@ -47,6 +47,11 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         tasksList.removeAll(discardTasks);
+
+        if (tasksList.size() == 0) {
+            container.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
+        }
+
         selectedTasks.clear();
 
         notifyDataSetChanged();
@@ -128,14 +133,20 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addTask(Tasks task) {
-        if (tasksList == null) return;
         tasksList.add(task);
 
         notifyItemChanged(tasksList.size()-1);
+        container.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
     }
 
     public TaskAdapter(View container, List<Tasks> tasks) {
         this.container = container;
         tasksList = tasks;
+
+        if (tasksList.size() == 0) {
+            container.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
+            return;
+        }
+        container.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
     }
 }
