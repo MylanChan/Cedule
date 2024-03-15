@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
@@ -16,7 +15,6 @@ import cedule.app.data.Database;
 import cedule.app.fragments.CalendarFragment;
 import cedule.app.fragments.TaskFragment;
 import cedule.app.fragments.WidgetsFragment;
-import cedule.app.services.Notification;
 
 public class MainActivity extends AppCompatActivity {
     private static Database database;
@@ -75,7 +73,5 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fr_app_main, TaskFragment.class, null)
                 .commit();
-
-        new Notification(this, "test", "Test").post();
     }
 }
