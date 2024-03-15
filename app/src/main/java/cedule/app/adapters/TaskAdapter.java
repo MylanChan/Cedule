@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import cedule.app.R;
@@ -26,6 +27,11 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final static int MODE_NORMAL = 0;
     public final static int MODE_SELECT = 1;
     private int mode = MODE_NORMAL;
+
+    private void sortByReverse() {
+        Collections.reverse(tasksList);
+        notifyDataSetChanged();
+    }
 
     private void setNormalModeStyles() {
         container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);

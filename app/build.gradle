@@ -31,7 +31,10 @@ android {
             res {
                 srcDirs 'src/main/res',
                         'src/main/res/layouts/activities',
-                        'src/main/res/layouts/fragments', 'src\\main\\res', 'src\\main\\res\\layouts\\adapters', 'src\\main\\res\\layouts\\viewholders', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\layouts\\menus'
+                        'src/main/res/layouts/fragments', 'src\\main\\res', 'src\\main\\res\\layouts\\adapters', 'src\\main\\res\\layouts\\viewholders', 'src\\main\\res\\layouts\\dialogs'
+            }
+            java {
+                srcDirs 'src\\main\\java'
             }
         }
     }
