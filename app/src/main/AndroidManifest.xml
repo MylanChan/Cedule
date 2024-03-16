@@ -18,10 +18,7 @@
             android:name=".activities.FocusActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.StoryBehindActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.AboutUsActivity"
+            android:name=".activities.DocumentActivity"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
