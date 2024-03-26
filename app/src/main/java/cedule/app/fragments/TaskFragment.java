@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cedule.app.R;
@@ -23,7 +24,6 @@ import cedule.app.activities.TaskSettingActivity;
 import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
-import cedule.app.dialogs.AddTaskDialog;
 import cedule.app.dialogs.ConfirmationDialog;
 
 public class TaskFragment extends Fragment {
@@ -96,7 +96,7 @@ public class TaskFragment extends Fragment {
                 return;
             }
             requireActivity().runOnUiThread(() -> {
-                rvTasks.setAdapter(null);
+                rvTasks.setAdapter(new TaskAdapter(view, new ArrayList<>()));
             });
         }).start();
     }
