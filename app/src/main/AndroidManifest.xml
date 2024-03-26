@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Cedule"
         tools:targetApi="31">
         <activity
+            android:name=".activities.TaskSettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.FocusActivity"
             android:exported="false" />
         <activity

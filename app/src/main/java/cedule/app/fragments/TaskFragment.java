@@ -19,6 +19,7 @@ import java.util.List;
 import cedule.app.R;
 import cedule.app.activities.FocusActivity;
 import cedule.app.activities.MainActivity;
+import cedule.app.activities.TaskSettingActivity;
 import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
@@ -152,7 +153,8 @@ public class TaskFragment extends Fragment {
         }).start();
 
         view.findViewById(R.id.btn_add).setOnClickListener(v -> {
-            new AddTaskDialog().show(getParentFragmentManager(), null);
+            Intent intent = new Intent(requireActivity(), TaskSettingActivity.class);
+            startActivity(intent);
         });
 
         TabLayout tlTasks = view.findViewById(R.id.tl_tasks);
