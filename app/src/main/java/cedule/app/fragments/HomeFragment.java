@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment;
 import cedule.app.R;
 import cedule.app.activities.DocumentActivity;
 
-public class WidgetsFragment extends Fragment {
+public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        View view = inflater.inflate(R.layout.fragment_widgets, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         view.findViewById(R.id.btn_about).setOnClickListener(v -> {
             Intent intent = new Intent(requireActivity(), DocumentActivity.class);

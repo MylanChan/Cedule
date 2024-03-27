@@ -29,12 +29,20 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
+            android:id="@+id/iv_widgets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_home"
+            app:tint="#262626" />
+
+        <ImageView
             android:id="@+id/iv_task"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_task"
-            app:tint="#262626" />
+            app:tint="#a5a5a5" />
 
         <ImageView
             android:id="@+id/iv_calendar"
@@ -44,13 +52,6 @@
             android:src="@drawable/ic_calendar"
             app:tint="#a5a5a5" />
 
-        <ImageView
-            android:id="@+id/iv_widgets"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_widgets"
-            app:tint="#a5a5a5" />
     </LinearLayout>
 
 

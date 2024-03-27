@@ -14,7 +14,7 @@ import cedule.app.R;
 import cedule.app.data.Database;
 import cedule.app.fragments.CalendarFragment;
 import cedule.app.fragments.TaskFragment;
-import cedule.app.fragments.WidgetsFragment;
+import cedule.app.fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     private static Database database;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         database = Room.databaseBuilder(this, Database.class, "app.db")
                 .createFromAsset("app.db")
+                .addMigrations()
                 .build();
 
         findViewById(R.id.iv_task)
@@ -68,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
                 .setOnClickListener(v -> switchFragment(v, CalendarFragment.class));
 
         findViewById(R.id.iv_widgets)
-                .setOnClickListener(v -> switchFragment(v, WidgetsFragment.class));
+                .setOnClickListener(v -> switchFragment(v, HomeFragment.class));
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fr_app_main, TaskFragment.class, null)
+                .add(R.id.fr_app_main, HomeFragment.class, null)
                 .commit();
     }
 }
