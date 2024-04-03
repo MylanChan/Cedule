@@ -2,9 +2,14 @@ package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.TimePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
+
+import java.util.Calendar;
 
 import cedule.app.R;
 import cedule.app.utils.TimeUtils;
@@ -54,5 +59,10 @@ public class FocusActivity extends AppCompatActivity {
                 ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_pause);
             }
         });
+
+        findViewById(R.id.ib_exit).setOnClickListener(v -> finish());
+
+        getWindow().setStatusBarColor(0x84F5F2F2);
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
     }
 }
