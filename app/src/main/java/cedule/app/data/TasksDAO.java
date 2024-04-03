@@ -13,6 +13,10 @@ public interface TasksDAO {
     @Query("SELECT * FROM tasks WHERE category=:category")
     List<Tasks> getTasksByCategory(Integer category);
 
+    @Query("UPDATE tasks SET title=:title, category=:cat, startDate=:startDate, startTime=:startTime, isDone=:isDone, isNotify=:isNotify, note=:note WHERE id=:taskId")
+    void updateTask(int taskId, String title, Integer cat, Integer startDate, Integer startTime,
+                    Integer isDone, Integer isNotify, String note);
+
     @Query("INSERT INTO tasks (title, category, startDate, startTime, isDone, isNotify, note) " +
             "VALUES (:title, :cat, :startDate, :startTime, :isDone, :isNotify, :note)")
     void addTask(String title, Integer cat, Integer startDate, Integer startTime,

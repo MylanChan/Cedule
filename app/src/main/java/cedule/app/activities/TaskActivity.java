@@ -21,7 +21,6 @@ import cedule.app.R;
 import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
-import cedule.app.dialogs.ConfirmationDialog;
 
 public class TaskActivity extends AppCompatActivity {
     private void handleOnClickSort(View v) {
@@ -167,7 +166,6 @@ public class TaskActivity extends AppCompatActivity {
         findViewById(R.id.ib_sort).setOnClickListener(this::handleOnClickSort);
         findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
 
+        findViewById(R.id.iv_home).setOnClickListener(v -> finish());
     }
-
-
 }

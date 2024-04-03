@@ -64,6 +64,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#00FFFFFF"
+                android:foreground="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_filter" />
 
             <ImageButton
@@ -71,6 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:backgroundTint="#00FFFFFF"
+                android:foreground="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_sort" />
         </LinearLayout>
 
@@ -88,6 +90,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginRight="8dp"
                 android:background="#00000000"
+                android:foreground="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_more_vert" />
 
             <ImageButton
@@ -95,6 +98,7 @@
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:background="#00000000"
+                android:foreground="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_trash" />
         </LinearLayout>
 
@@ -104,7 +108,7 @@
         android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/ll_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_ribbon">
@@ -121,6 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
         android:clickable="true"
         app:layout_constraintBottom_toTopOf="@+id/ll_navbar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -151,12 +156,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/iv_widgets"
+            android:id="@+id/iv_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_home"
-            app:tint="#262626" />
+            app:tint="#a5a5a5" />
 
         <ImageView
             android:id="@+id/iv_task"
@@ -164,7 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_task"
-            app:tint="#a5a5a5" />
+            app:tint="#262626" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

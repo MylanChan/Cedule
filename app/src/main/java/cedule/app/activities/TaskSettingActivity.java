@@ -3,6 +3,8 @@ package cedule.app.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,6 +13,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Calendar;
 
 import cedule.app.R;
 import cedule.app.data.Categories;
@@ -44,13 +48,25 @@ public class TaskSettingActivity extends AppCompatActivity {
                         }
 
                         String note = ((EditText) findViewById(R.id.tv_note)).getText().toString();
-
+                        if (getIntent().hasExtra("taskId")) {
+                            MainActivity.getDatabase().tasksDAO().updateTask(
+                                    getIntent().getExtras().getInt("taskId"),
+                                    title,
+                                    categoryId,
+                                    startDate,
+                                    startTime,
+                                    ((CheckBox) findViewById(R.id.cb_input)).isChecked() ? 1 : 0,
+                                    isNotify ? 1 : 0,
+                                    note == "" ? null : note
+                            );
+                            return;
+                        }
                         MainActivity.getDatabase().tasksDAO().addTask(
                                 title,
                                 categoryId,
                                 startDate,
                                 startTime,
-                                0,
+                                ((CheckBox) findViewById(R.id.cb_input)).isChecked() ? 1 : 0,
                                 isNotify ? 1 : 0,
                                 note == "" ? null : note
                         );
@@ -89,6 +105,27 @@ public class TaskSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_setting);
 
+        findViewById(R.id.ib_exit).setOnClickListener(v -> finish());
+
+        findViewById(R.id.ll_time).setOnClickListener(v -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = mcurrentTime.get(Calendar.MINUTE);
+            TimePickerDialog mTimePicker;
+            mTimePicker = new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
+                ((TextView) findViewById(R.id.tv_time_desc)).setText( selectedHour + ":" + selectedMinute);
+                startTime = (selectedHour * 60 + selectedMinute) * 1000;
+            }, hour, minute, true);
+            mTimePicker.setTitle("Select Time");
+            mTimePicker.show();
+        });
+
+        findViewById(R.id.ll_date).setOnClickListener(v -> {
+            DatePickerDialog datepicker;
+
+            datepicker = new DatePickerDialog(this);
+        });
+
         findViewById(R.id.ll_notify).setOnClickListener(v -> handleOnClickNotify(!isNotify));
 
         if (getIntent().hasExtra("taskId")) {
@@ -99,7 +136,7 @@ public class TaskSettingActivity extends AppCompatActivity {
                     ((EditText) findViewById(R.id.tv_task_name)).setText(task.title);
 
                     if (task.isDone != null) {
-                        ((CheckBox) findViewById(R.id.cb_done)).setChecked(task.isDone == 1);
+                        ((CheckBox) findViewById(R.id.cb_input)).setChecked(task.isDone == 1);
                     }
 
                     if (task.startDate != null) {
@@ -113,6 +150,8 @@ public class TaskSettingActivity extends AppCompatActivity {
                             handleOnClickNotify(task.isNotify == 1);
                         }
                     }
+
+                    if (task.note != null) ((EditText) findViewById(R.id.tv_note)).setText(task.note);
                 });
 
 

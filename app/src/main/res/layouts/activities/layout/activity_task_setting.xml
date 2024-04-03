@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
     android:orientation="vertical"
     android:padding="12dp"
     tools:context=".activities.TaskSettingActivity">
@@ -15,10 +16,11 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/ib_exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#00000000"
+            android:foreground="?attr/selectableItemBackground"
             android:rotation="180"
             app:srcCompat="@drawable/ic_rchevron" />
 
@@ -45,7 +47,7 @@
             android:orientation="vertical">
 
             <CheckBox
-                android:id="@+id/cb_done"
+                android:id="@+id/cb_input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
@@ -69,6 +71,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <ImageView
@@ -98,8 +101,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_date"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <ImageView
@@ -128,8 +133,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_time"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <ImageView
@@ -162,6 +169,7 @@
         android:id="@+id/ll_notify"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <ImageView
