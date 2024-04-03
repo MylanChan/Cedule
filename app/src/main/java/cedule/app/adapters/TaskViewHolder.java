@@ -1,15 +1,18 @@
 package cedule.app.adapters;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
+import cedule.app.activities.TaskSettingActivity;
 import cedule.app.data.Tasks;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -20,6 +23,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     public static final int STATUS_SELECTED = 1;
     public int status = STATUS_NORMAL;
 
+    private AppCompatActivity activity;
+
     private Tasks task;
     private Tasks getTask() {
         return task;
@@ -27,7 +32,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
     private void updateIsChecked() {
         CheckBox checkBox = view.findViewById(R.id.cb_input);
-        checkBox.setChecked(!checkBox.isChecked());
+        checkBox.setChecked(checkBox.isChecked());
 
         new Thread(() -> {
             MainActivity.getDatabase().tasksDAO()
@@ -60,26 +65,30 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         tvMsg.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
     }
 
-    public void loadData(Tasks task) {
+    public void loadData(AppCompatActivity activity, Tasks task) {
+        this.activity = activity;
         this.task = task;
 
         CheckBox cbInput = view.findViewById(R.id.cb_input);
-        cbInput.setChecked(task.isCompleted != null && task.isCompleted == 1);
+        cbInput.setChecked(task.isDone != null && task.isDone == 1);
 
         TextView tvTitle = view.findViewById(R.id.tv_title);
         tvTitle.setText(task.title);
 
         TextView tvMsg = view.findViewById(R.id.tv_msg);
-        if (task.message == null) {
-            tvMsg.setVisibility(View.GONE);
-            return;
-        }
-        tvMsg.setText(task.message);
+//        if (task.message == null) {
+//            tvMsg.setVisibility(View.GONE);
+//            return;
+//        }
+//        tvMsg.setText(task.message);
     }
 
     private void handleOnClickItem() {
         if (adapter.getMode() == TaskAdapter.MODE_NORMAL) {
-            updateIsChecked();
+            Intent intent = new Intent(activity, TaskSettingActivity.class);
+            intent.putExtra("taskId", task.id);
+
+            activity.startActivity(intent);
         }
         else if (adapter.getMode() == TaskAdapter.MODE_SELECT){
             toggleSelection();
@@ -98,6 +107,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
         view.findViewById(R.id.cl_item)
                 .setOnClickListener(v -> handleOnClickItem());
+
+        view.findViewById(R.id.cb_input).setOnClickListener(v -> updateIsChecked());
 
         view.findViewById(R.id.cl_item).setOnLongClickListener(v -> {
                 toggleSelection();

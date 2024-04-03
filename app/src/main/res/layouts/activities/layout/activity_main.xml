@@ -1,58 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fr_app_main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#fbfbfb"
-        app:layout_constraintBottom_toTopOf="@+id/ll_navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".activities.MainActivity">
 
     <LinearLayout
-        android:id="@+id/ll_navbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E6E6E6"
-        android:gravity="center"
-        android:minHeight="56dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/iv_widgets"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_home"
-            app:tint="#262626" />
-
-        <ImageView
-            android:id="@+id/iv_task"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_task"
-            app:tint="#a5a5a5" />
-
-        <ImageView
-            android:id="@+id/iv_calendar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_calendar"
-            app:tint="#a5a5a5" />
+        android:orientation="vertical">
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
+        android:text="Welcome to Cedule!"
+        android:textSize="20sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="You used our service 23 days and completed 32 tasks"
+        android:textColor="#4A4A4A" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="-15dp"
+        android:background="@drawable/view_rounded"
+        android:backgroundTint="#EDEBEB"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="12dp"
+            android:text="Our services"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/view_rounded"
+            android:backgroundTint="#EDEBEB"
+            android:minHeight="48dp"
+            android:orientation="horizontal"
+            android:paddingTop="24dp"
+            android:paddingBottom="48dp">
+
+            <Button
+                android:id="@+id/btn_task"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/view_rounded"
+                android:drawableTop="@drawable/ic_task"
+                android:drawableTint="#fff"
+                android:foreground="?attr/selectableItemBackground"
+                android:minWidth="0dp"
+                android:text="Task"
+                android:textColor="#BEBEBE" />
+
+            <Button
+                android:id="@+id/btn_event"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/view_rounded"
+                android:drawableTop="@drawable/ic_focus"
+                android:drawableTint="#fff"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Focus"
+                android:textColor="#BEBEBE" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="48dp"
+            android:background="@drawable/view_rounded"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="36dp"
+            android:text="More info"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/view_rounded"
+            android:drawableLeft="@drawable/ic_group"
+            android:drawableTint="#C9C9C9"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="About us"
+            android:textColor="#C9C9C9" />
+
+        <Button
+            android:id="@+id/btn_story"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/view_rounded"
+            android:drawableLeft="@drawable/ic_board"
+            android:drawableTint="#C9C9C9"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="Story behind"
+            android:textColor="#C9C9C9" />
+
+    </LinearLayout>
+</LinearLayout>

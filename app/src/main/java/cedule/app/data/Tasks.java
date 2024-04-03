@@ -17,19 +17,21 @@ public class Tasks {
     @PrimaryKey
     public Integer id;
 
-    public Integer category;
-
-    public Integer createdDate;
-    public Integer deadline;
-
-    @ColumnInfo(defaultValue = "1")
-    public Integer severity;
+    public Integer createTime;
 
     @NonNull
     public String title;
 
-    public String message;
+    public Integer category;
+
+    public Integer startDate;
+
+    public Integer startTime;
 
     @ColumnInfo(defaultValue = "0")
-    public Integer isCompleted;
+    public Integer isDone;
+
+    public Integer isNotify;
+
+    public String note;
 }

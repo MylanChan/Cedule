@@ -13,22 +13,29 @@ public interface TasksDAO {
     @Query("SELECT * FROM tasks WHERE category=:category")
     List<Tasks> getTasksByCategory(Integer category);
 
-    @Query("SELECT * FROM tasks WHERE severity=:severity")
-    List<Tasks> getTasksBySeverity(Integer severity);
+    @Query("INSERT INTO tasks (title, category, startDate, startTime, isDone, isNotify, note) " +
+            "VALUES (:title, :cat, :startDate, :startTime, :isDone, :isNotify, :note)")
+    void addTask(String title, Integer cat, Integer startDate, Integer startTime,
+                 Integer isDone, Integer isNotify, String note);
 
-    @Query("INSERT INTO tasks (category, deadline, severity, title, message) " +
-            "VALUES (:cat, :deadline, :severity, :title, :message)")
-    void addTask(Integer cat, Integer deadline, Integer severity, String title, String message);
+    @Query("SELECT * FROM tasks WHERE id=:id LIMIT 1")
+    Tasks getTaskById(int id);
 
     @Query("DELETE FROM tasks WHERE id IN (:id)")
     void discardTasks(List<Integer> id);
 
-    @Query("UPDATE tasks SET isCompleted=:isCompleted WHERE id=:id")
-    void updateTaskStatus(Integer id, Integer isCompleted);
+    @Query("UPDATE tasks SET isDone=:isDone WHERE id=:id")
+    void updateTaskStatus(Integer id, Integer isDone);
 
     @Query("SELECT * FROM tasks ORDER BY id DESC LIMIT 1")
     List<Tasks> getLastTask();
 
     @Query("SELECT * FROM categories WHERE name=:name LIMIT 1")
-    List<Categories> getCategoryIdByName(String name);
+    Categories getCategoryByName(String name);
+
+    @Query("SELECT * FROM categories WHERE id=:id LIMIT 1")
+    Categories getCategoryById(int id);
+
+    @Query("INSERT OR IGNORE INTO categories (name) VALUES (:name)")
+    void addCategory(String name);
 }

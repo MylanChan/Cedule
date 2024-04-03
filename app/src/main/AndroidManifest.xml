@@ -24,6 +24,9 @@
             android:name=".activities.DocumentActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.TaskActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>

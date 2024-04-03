@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Integer> selectedTasks = new ArrayList<>();
     private final List<TaskViewHolder> viewHolders = new ArrayList<>();
 
-    private final View container;
+    private final AppCompatActivity activity;
 
     public final static int MODE_NORMAL = 0;
     public final static int MODE_SELECT = 1;
@@ -34,15 +36,15 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void setNormalModeStyles() {
-        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
-        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
-        container.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
+        activity.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
     }
 
     private void setSelectModeStyles() {
-        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.GONE);
-        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.VISIBLE);
-        container.findViewById(R.id.btn_add).setVisibility(View.GONE);
+        activity.findViewById(R.id.ll_ribbon_normal).setVisibility(View.GONE);
+        activity.findViewById(R.id.ll_ribbon_select).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.btn_add).setVisibility(View.GONE);
     }
 
     public void discardSelectedTasks() {
@@ -55,7 +57,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         tasksList.removeAll(discardTasks);
 
         if (tasksList.size() == 0) {
-            container.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
+            activity.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
         }
 
         selectedTasks.clear();
@@ -113,9 +115,9 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         // some elements are shared with different Tabs
         // and they may be hid if adapter is in select mode
-        container.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
-        container.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
-        container.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
+        activity.findViewById(R.id.btn_add).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.ll_ribbon_normal).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.ll_ribbon_select).setVisibility(View.GONE);
     }
 
     @Override @NonNull
@@ -130,7 +132,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((TaskViewHolder) holder).loadData(tasksList.get(position));
+        ((TaskViewHolder) holder).loadData(activity, tasksList.get(position));
     }
 
     @Override
@@ -142,17 +144,17 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         tasksList.add(task);
 
         notifyItemChanged(tasksList.size()-1);
-        container.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
+        activity.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
     }
 
-    public TaskAdapter(View container, List<Tasks> tasks) {
-        this.container = container;
+    public TaskAdapter(AppCompatActivity activity, List<Tasks> tasks) {
+        this.activity = activity;
         tasksList = tasks;
 
         if (tasksList.size() == 0) {
-            container.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
+            activity.findViewById(R.id.iv_task_completed).setVisibility(View.VISIBLE);
             return;
         }
-        container.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
+        activity.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
     }
 }

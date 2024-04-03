@@ -7,8 +7,7 @@ import androidx.room.RoomDatabase;
                 Categories.class,
                 Tasks.class
         },
-        version = 1,
-        exportSchema = false
+        version = 5
 )
 public abstract class Database extends RoomDatabase {
     public abstract TasksDAO tasksDAO();

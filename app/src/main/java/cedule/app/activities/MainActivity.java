@@ -1,20 +1,18 @@
 package cedule.app.activities;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
-import android.content.res.ColorStateList;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 
 import cedule.app.R;
 import cedule.app.data.Database;
-import cedule.app.fragments.CalendarFragment;
-import cedule.app.fragments.TaskFragment;
-import cedule.app.fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     private static Database database;
@@ -23,28 +21,6 @@ public class MainActivity extends AppCompatActivity {
         return database;
     }
 
-    private void switchFragment(View view, Class<? extends Fragment> destFragment) {
-        for (int id : new int[] {R.id.iv_task, R.id.iv_calendar, R.id.iv_widgets}) {
-            ImageView navItem = findViewById(id);
-
-            if (view.getId() == id) {
-                int onPrimary = ContextCompat.getColor(getApplicationContext(), R.color.onPrimary);
-                navItem.setImageTintList(ColorStateList.valueOf(onPrimary));
-                continue;
-            }
-
-            int onPrimaryVariant = ContextCompat.getColor(getApplicationContext(), R.color.onPrimaryVariant);
-            navItem.setImageTintList(ColorStateList.valueOf(onPrimaryVariant));
-        }
-
-        if (getSupportFragmentManager().findFragmentById(R.id.fr_app_main).getClass() == destFragment) {
-            return;
-        }
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fr_app_main, destFragment, null)
-                .commit();
-    }
 
     @Override
     protected void onDestroy() {
@@ -59,20 +35,36 @@ public class MainActivity extends AppCompatActivity {
 
         database = Room.databaseBuilder(this, Database.class, "app.db")
                 .createFromAsset("app.db")
-                .addMigrations()
+                .fallbackToDestructiveMigration()
                 .build();
 
-        findViewById(R.id.iv_task)
-                .setOnClickListener(v -> switchFragment(v, TaskFragment.class));
 
-        findViewById(R.id.iv_calendar)
-                .setOnClickListener(v -> switchFragment(v, CalendarFragment.class));
 
-        findViewById(R.id.iv_widgets)
-                .setOnClickListener(v -> switchFragment(v, HomeFragment.class));
+        findViewById(R.id.btn_about).setOnClickListener(v -> {
+            Intent intent = new Intent(this, DocumentActivity.class);
+            intent.putExtra("type", DocumentActivity.TYPE_ABOUT);
+            startActivity(intent);
+        });
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fr_app_main, HomeFragment.class, null)
-                .commit();
+
+        findViewById(R.id.btn_story).setOnClickListener(v -> {
+            Intent intent = new Intent(this, DocumentActivity.class);
+            intent.putExtra("type", DocumentActivity.TYPE_STORY);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.btn_task).setOnClickListener(v -> {
+            startActivity(new Intent(this, TaskActivity.class));
+        });
+
+//        findViewById(R.id.iv_task)
+//                .setOnClickListener(v -> switchFragment(v, TaskFragment.class));
+//
+//        findViewById(R.id.iv_widgets)
+//                .setOnClickListener(v -> switchFragment(v, HomeFragment.class));
+//
+//        getSupportFragmentManager().beginTransaction()
+//                .add(R.id.fr_app_main, HomeFragment.class, null)
+//                .commit();
     }
 }
