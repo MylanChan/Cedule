@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,8 +27,7 @@ public class TaskSettingActivity extends AppCompatActivity {
     private Integer startDate = null;
     private Integer startTime = null;
 
-    @Override
-    public void onBackPressed() {
+    private void exitPage() {
         new AlertDialog.Builder(this)
                 .setTitle("Exit Task Setting")
                 .setMessage("Do you want to save these settings?")
@@ -81,13 +82,18 @@ public class TaskSettingActivity extends AppCompatActivity {
                 }).show();
     }
 
+    @Override
+    public void onBackPressed() {
+        exitPage();
+    }
+
     private void handleOnClickNotify(boolean notify) {
         isNotify = notify;
 
         ImageView ivNotify = findViewById(R.id.iv_notify);
         TextView tvNotify = findViewById(R.id.tv_notify_desc);
 
-        if (isNotify) {
+        if (isNotify)  {
             ivNotify.setImageResource(R.drawable.ic_notification_active);
             ivNotify.setImageTintList(ColorStateList.valueOf(Color.BLACK));
 
@@ -105,7 +111,7 @@ public class TaskSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_setting);
 
-        findViewById(R.id.ib_exit).setOnClickListener(v -> finish());
+        findViewById(R.id.ib_exit).setOnClickListener(v -> exitPage());
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
             Calendar mcurrentTime = Calendar.getInstance();
@@ -121,9 +127,26 @@ public class TaskSettingActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.ll_date).setOnClickListener(v -> {
-            DatePickerDialog datepicker;
+                DatePickerDialog datepicker;
 
-            datepicker = new DatePickerDialog(this);
+                datepicker = new DatePickerDialog(
+                        this,
+                        (view, year, month, dayOfMonth) -> {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(Calendar.YEAR, year);
+                            calendar.set(Calendar.MONTH, month);
+                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+
+                            startDate = (int) calendar.getTimeInMillis();
+                        },
+                        Calendar.getInstance().get(Calendar.YEAR),
+                        Calendar.getInstance().get(Calendar.MONTH),
+                        Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+
+                datepicker.show();
         });
 
         findViewById(R.id.ll_notify).setOnClickListener(v -> handleOnClickNotify(!isNotify));
@@ -140,9 +163,11 @@ public class TaskSettingActivity extends AppCompatActivity {
                     }
 
                     if (task.startDate != null) {
+                        startDate = task.startDate;
                         ((TextView) findViewById(R.id.tv_date_desc)).setText(String.valueOf(task.startDate));
 
                         if (task.startTime != null) {
+                            startTime = task.startTime;
                             ((TextView) findViewById(R.id.tv_time_desc)).setText(String.valueOf(task.startTime));
                         }
 
