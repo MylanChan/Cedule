@@ -57,14 +57,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, TaskActivity.class));
         });
 
-//        findViewById(R.id.iv_task)
-//                .setOnClickListener(v -> switchFragment(v, TaskFragment.class));
-//
-//        findViewById(R.id.iv_widgets)
-//                .setOnClickListener(v -> switchFragment(v, HomeFragment.class));
-//
-//        getSupportFragmentManager().beginTransaction()
-//                .add(R.id.fr_app_main, HomeFragment.class, null)
-//                .commit();
+        findViewById(R.id.btn_focus).setOnClickListener(v -> {
+            startActivity(new Intent(this, FocusActivity.class));
+        });
     }
 }

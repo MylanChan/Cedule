@@ -19,7 +19,6 @@ public class Tasks {
 
     public Integer createTime;
 
-    @NonNull
     public String title;
 
     public Integer category;

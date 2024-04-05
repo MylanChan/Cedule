@@ -74,7 +74,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         cbInput.setChecked(task.isDone != null && task.isDone == 1);
 
         TextView tvTitle = view.findViewById(R.id.tv_title);
-        tvTitle.setText(task.title);
+        tvTitle.setText(task.title == null ? "Untitled Task" : task.title);
 
         TextView tvMsg = view.findViewById(R.id.tv_msg);
 
@@ -84,6 +84,9 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
                 return;
             }
             tvMsg.setText(TimeUtils.toDateString(task.startDate));
+        }
+        else {
+            tvMsg.setVisibility(View.GONE);
         }
     }
 

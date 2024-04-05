@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -40,15 +41,15 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                     new Thread(() -> {
                         String title = ((EditText) findViewById(R.id.tv_task_name)).getText().toString();
-                        if (title.equals("")) title = "Untitled Task";
+                        if (title.equals("")) title = null;
 
                         Integer categoryId = null;
 
 
                         String categoryName =  ((TextView) findViewById(R.id.tv_category_desc)).getText().toString();
-                        MainActivity.getDatabase().tasksDAO().addCategory(categoryName);
 
                         if (categoryName != "") {
+                            MainActivity.getDatabase().tasksDAO().addCategory(categoryName);
                             categoryId = MainActivity.getDatabase().tasksDAO().getCategoryByName(categoryName).id;
                         }
 
@@ -120,6 +121,13 @@ public class TaskSettingActivity extends AppCompatActivity {
         findViewById(R.id.ib_exit).setOnClickListener(v -> exitPage());
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
+            if (startDate == null) {
+                Toast toast = new Toast(this);
+                toast.setText("You need to configure the date first.");
+                toast.show();
+                return;
+            }
+
             Calendar mcurrentTime = Calendar.getInstance();
             int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
             int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -146,9 +154,6 @@ public class TaskSettingActivity extends AppCompatActivity {
                             calendar.set(Calendar.YEAR, year);
                             calendar.set(Calendar.MONTH, month);
                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                            calendar.set(Calendar.HOUR_OF_DAY, 0);
-                            calendar.set(Calendar.MINUTE, 0);
-                            calendar.set(Calendar.SECOND, 0);
 
                             startDate = calendar.getTimeInMillis();
                             ((TextView) findViewById(R.id.tv_date_desc))
@@ -197,7 +202,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
 
                 if (task.category != null) {
-                    Categories category = MainActivity.getDatabase().tasksDAO().getCategoryById(task.id);
+                    Categories category = MainActivity.getDatabase().tasksDAO().getCategoryById(task.category);
                     runOnUiThread(() -> {
                         ((TextView) findViewById(R.id.tv_category_desc)).setText(category.name);
                     });
