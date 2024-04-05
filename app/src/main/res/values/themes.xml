@@ -5,12 +5,12 @@
         <item name="android:windowLightStatusBar">@color/primary</item>
         <item name="android:navigationBarColor">@color/primary</item>
         <item name="android:textColor">@color/onPrimary</item>
-        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
+<!--        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>-->
     </style>
 
     <style name="Theme.Cedule" parent="Base.Theme.Cedule" />
 
-    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert" >
-        <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Button.Colored</item>
-    </style>
+<!--    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert" >-->
+<!--        <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Button.Colored</item>-->
+<!--    </style>-->
 </resources>

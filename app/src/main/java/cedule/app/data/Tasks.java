@@ -24,7 +24,7 @@ public class Tasks {
 
     public Integer category;
 
-    public Integer startDate;
+    public Long startDate;
 
     public Integer startTime;
 

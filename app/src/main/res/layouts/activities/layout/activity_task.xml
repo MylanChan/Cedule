@@ -108,7 +108,7 @@
         android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/ll_navbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_ribbon">
@@ -127,7 +127,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:clickable="true"
-        app:layout_constraintBottom_toTopOf="@+id/ll_navbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
 
@@ -143,33 +143,4 @@
         app:srcCompat="@drawable/bg_task_completed"
         tools:visibility="invisible" />
 
-    <LinearLayout
-        android:id="@+id/ll_navbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#E6E6E6"
-        android:gravity="center"
-        android:minHeight="56dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/iv_home"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_home"
-            app:tint="#a5a5a5" />
-
-        <ImageView
-            android:id="@+id/iv_task"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_task"
-            app:tint="#262626" />
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

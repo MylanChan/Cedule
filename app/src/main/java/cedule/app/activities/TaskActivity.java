@@ -166,6 +166,6 @@ public class TaskActivity extends AppCompatActivity {
         findViewById(R.id.ib_sort).setOnClickListener(this::handleOnClickSort);
         findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
 
-        findViewById(R.id.iv_home).setOnClickListener(v -> finish());
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
     }
 }

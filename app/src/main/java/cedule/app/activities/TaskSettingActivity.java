@@ -10,6 +10,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -17,14 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import cedule.app.R;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
+import cedule.app.utils.TimeUtils;
 
 public class TaskSettingActivity extends AppCompatActivity {
     private boolean isNotify = false;
-    private Integer startDate = null;
+    private Long startDate = null;
     private Integer startTime = null;
 
     private void exitPage() {
@@ -111,6 +115,8 @@ public class TaskSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_setting);
 
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
+
         findViewById(R.id.ib_exit).setOnClickListener(v -> exitPage());
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
@@ -120,9 +126,13 @@ public class TaskSettingActivity extends AppCompatActivity {
             TimePickerDialog mTimePicker;
             mTimePicker = new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
                 ((TextView) findViewById(R.id.tv_time_desc)).setText( selectedHour + ":" + selectedMinute);
-                startTime = (selectedHour * 60 + selectedMinute) * 1000;
+
+                Calendar time = Calendar.getInstance();
+                time.setTimeInMillis(0);
+                time.set(Calendar.HOUR, selectedHour);
+                time.set(Calendar.MINUTE, selectedMinute);
+                startTime = (int) time.getTimeInMillis();
             }, hour, minute, true);
-            mTimePicker.setTitle("Select Time");
             mTimePicker.show();
         });
 
@@ -140,13 +150,17 @@ public class TaskSettingActivity extends AppCompatActivity {
                             calendar.set(Calendar.MINUTE, 0);
                             calendar.set(Calendar.SECOND, 0);
 
-                            startDate = (int) calendar.getTimeInMillis();
+                            startDate = calendar.getTimeInMillis();
+                            ((TextView) findViewById(R.id.tv_date_desc))
+                                    .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
                         },
                         Calendar.getInstance().get(Calendar.YEAR),
                         Calendar.getInstance().get(Calendar.MONTH),
                         Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 
+
                 datepicker.show();
+
         });
 
         findViewById(R.id.ll_notify).setOnClickListener(v -> handleOnClickNotify(!isNotify));
@@ -164,11 +178,13 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                     if (task.startDate != null) {
                         startDate = task.startDate;
-                        ((TextView) findViewById(R.id.tv_date_desc)).setText(String.valueOf(task.startDate));
+
+                        ((TextView) findViewById(R.id.tv_date_desc))
+                            .setText(TimeUtils.toDateString(task.startDate));
 
                         if (task.startTime != null) {
                             startTime = task.startTime;
-                            ((TextView) findViewById(R.id.tv_time_desc)).setText(String.valueOf(task.startTime));
+                            ((TextView) findViewById(R.id.tv_time_desc)).setText(TimeUtils.toTimeString(task.startTime));
                         }
 
                         if (task.isNotify != null) {
@@ -188,5 +204,21 @@ public class TaskSettingActivity extends AppCompatActivity {
                 }
             }).start();
         }
+
+        new Thread(() -> {
+            AutoCompleteTextView atv_category = findViewById(R.id.tv_category_desc);
+
+            Categories[] categories = MainActivity.getDatabase().tasksDAO().getAllCategory();
+            String[] categoryNames = new String[categories.length];
+
+            for (int i=0; i < categories.length; i++) {
+                categoryNames[i] = categories[i].name;
+            }
+
+            runOnUiThread(() -> {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categoryNames);
+                atv_category.setAdapter(adapter);
+            });
+        }).start();
     }
 }

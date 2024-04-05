@@ -35,9 +35,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
-        android:layout_marginBottom="-15dp"
-        android:background="@drawable/view_rounded"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/view_radius_top"
         android:backgroundTint="#EDEBEB"
         android:orientation="vertical"
         android:padding="24dp">
@@ -46,6 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="12dp"
             android:text="Our services"
             android:textSize="16sp" />

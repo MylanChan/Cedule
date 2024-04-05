@@ -14,6 +14,7 @@ import cedule.app.R;
 import cedule.app.activities.MainActivity;
 import cedule.app.activities.TaskSettingActivity;
 import cedule.app.data.Tasks;
+import cedule.app.utils.TimeUtils;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
     public final View view;
@@ -76,11 +77,14 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         tvTitle.setText(task.title);
 
         TextView tvMsg = view.findViewById(R.id.tv_msg);
-//        if (task.message == null) {
-//            tvMsg.setVisibility(View.GONE);
-//            return;
-//        }
-//        tvMsg.setText(task.message);
+
+        if (task.startDate != null) {
+            if (task.startTime != null) {
+                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + TimeUtils.toTimeString(task.startTime));
+                return;
+            }
+            tvMsg.setText(TimeUtils.toDateString(task.startDate));
+        }
     }
 
     private void handleOnClickItem() {
