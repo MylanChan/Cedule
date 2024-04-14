@@ -117,7 +117,7 @@
             android:id="@+id/rv_tasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/viewholder_task" />
+            tools:listitem="@layout/holder_task_view" />
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
