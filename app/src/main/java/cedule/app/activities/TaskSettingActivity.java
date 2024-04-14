@@ -37,6 +37,7 @@ public class TaskSettingActivity extends AppCompatActivity {
                 .setTitle("Exit Task Setting")
                 .setMessage("Do you want to save these settings?")
                 .setPositiveButton("YES", (dialog, button) -> {
+                    setResult(RESULT_OK);
                     finish();
 
                     new Thread(() -> {

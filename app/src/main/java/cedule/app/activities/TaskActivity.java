@@ -136,6 +136,20 @@ public class TaskActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+
+            new Thread(() -> {
+                List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+
+                runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
+            }).start();
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,7 +167,7 @@ public class TaskActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_add).setOnClickListener(v -> {
             Intent intent = new Intent(this, TaskSettingActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 2);
         });
 
         TabLayout tlTasks = findViewById(R.id.tl_tasks);

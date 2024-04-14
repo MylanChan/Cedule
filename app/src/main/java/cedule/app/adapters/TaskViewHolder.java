@@ -95,7 +95,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             Intent intent = new Intent(activity, TaskSettingActivity.class);
             intent.putExtra("taskId", task.id);
 
-            activity.startActivity(intent);
+            activity.startActivityForResult(intent, 1);
         }
         else if (adapter.getMode() == TaskAdapter.MODE_SELECT){
             toggleSelection();
