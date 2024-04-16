@@ -45,4 +45,13 @@ public interface TasksDAO {
 
     @Query("SELECT * FROM categories")
     Categories[] getAllCategory();
+
+    @Query("SELECT * FROM tasks ORDER BY title DESC")
+    List<Tasks> getTasksInNameDesc();
+
+    @Query("SELECT * FROM tasks ORDER BY startDate")
+    List<Tasks> getTasksInDeadline();
+
+    @Query("SELECT * FROM tasks ORDER BY title")
+    List<Tasks> getTasksInNameAsc();
 }

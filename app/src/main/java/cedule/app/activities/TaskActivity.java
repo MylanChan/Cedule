@@ -27,19 +27,29 @@ public class TaskActivity extends AppCompatActivity {
         PopupMenu menu = new PopupMenu(this, v);
         menu.getMenuInflater().inflate(R.menu.menu_sort, menu.getMenu());
         menu.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.item_sort_az) {
+            new Thread(() -> {
+                RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+                List<Tasks> tasks = null;
 
-            }
-            else if (itemId == R.id.item_sort_za) {
+                int itemId = item.getItemId();
 
-            }
-            else if (itemId == R.id.item_sort_deadline) {
+                if (itemId == R.id.item_sort_az) {
+                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInNameAsc();
+                }
+                else if (itemId == R.id.item_sort_za) {
+                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInNameDesc();
+                }
+                else if (itemId == R.id.item_sort_deadline) {
+                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInDeadline();
+                }
+                else if (itemId == R.id.item_sort_default) {
+                    tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+                }
 
-            }
-            else if (itemId == R.id.item_sort_default) {
-                // sort by id
-            }
+                List<Tasks> finalTasks = tasks;
+                runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));
+            }).start();
+
             return true;
         });
 

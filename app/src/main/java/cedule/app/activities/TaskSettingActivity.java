@@ -162,8 +162,6 @@ public class TaskSettingActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.tv_time_desc)).setText( selectedHour + ":" + selectedMinute);
 
                 startTime = (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
-                System.out.println("Selected hours: " + selectedHour);
-                System.out.println("Selected Minutes: " + selectedMinute);
                 setPropertyEnableStyle(true, findViewById(R.id.iv_time), findViewById(R.id.tv_time_title), R.drawable.ic_time);
             }, hour, minute, true);
             mTimePicker.show();
