@@ -1,11 +1,11 @@
-package cedule.app.data;
+package cedule.app.data.entities;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "categories")
-public class Categories {
+public class Category {
     @PrimaryKey
     public Integer id;
 

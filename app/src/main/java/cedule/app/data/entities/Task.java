@@ -1,19 +1,20 @@
-package cedule.app.data;
+package cedule.app.data.entities;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import cedule.app.data.entities.Category;
+
 @Entity(tableName = "tasks", foreignKeys = @ForeignKey(
-        entity = Categories.class,
+        entity = Category.class,
         parentColumns = "id",
         childColumns = "category",
         onUpdate = 5,
         onDelete = 4
 ))
-public class Tasks {
+public class Task {
     @PrimaryKey
     public Integer id;
 

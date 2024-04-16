@@ -9,15 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
-import cedule.app.data.Tasks;
+import cedule.app.data.entities.Task;
 
 public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final List<Tasks> tasksList;
+    private final List<Task> tasksList;
     private final List<Integer> selectedTasks = new ArrayList<>();
     private final List<TaskViewHolder> viewHolders = new ArrayList<>();
 
@@ -40,7 +39,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void discardSelectedTasks() {
-        List<Tasks> discardTasks = new ArrayList<>();
+        List<Task> discardTasks = new ArrayList<>();
 
         for (int adapterPos : selectedTasks) {
             discardTasks.add(tasksList.get(adapterPos));
@@ -59,7 +58,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         new Thread(() -> {
             List<Integer> idList = new ArrayList<>();
-            for (Tasks task : discardTasks) {
+            for (Task task : discardTasks) {
                 idList.add(task.id);
             }
             MainActivity.getDatabase().tasksDAO().discardTasks(idList);
@@ -132,14 +131,14 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return tasksList == null ? 0 : tasksList.size();
     }
 
-    public void addTask(Tasks task) {
+    public void addTask(Task task) {
         tasksList.add(task);
 
         notifyItemChanged(tasksList.size()-1);
         activity.findViewById(R.id.iv_task_completed).setVisibility(View.INVISIBLE);
     }
 
-    public TaskAdapter(AppCompatActivity activity, List<Tasks> tasks) {
+    public TaskAdapter(AppCompatActivity activity, List<Task> tasks) {
         this.activity = activity;
         tasksList = tasks;
 

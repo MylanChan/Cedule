@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
 import cedule.app.activities.TaskSettingActivity;
-import cedule.app.data.Tasks;
+import cedule.app.data.entities.Task;
 import cedule.app.utils.TimeUtils;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -28,8 +28,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
     private AppCompatActivity activity;
 
-    private Tasks task;
-    private Tasks getTask() {
+    private Task task;
+    private Task getTask() {
         return task;
     }
 
@@ -68,7 +68,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         tvMsg.setPaintFlags(isChecked ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
     }
 
-    public void loadData(AppCompatActivity activity, Tasks task) {
+    public void loadData(AppCompatActivity activity, Task task) {
         this.activity = activity;
         this.task = task;
 

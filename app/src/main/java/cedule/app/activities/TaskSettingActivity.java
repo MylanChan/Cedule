@@ -25,8 +25,8 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import cedule.app.R;
-import cedule.app.data.Categories;
-import cedule.app.data.Tasks;
+import cedule.app.data.entities.Category;
+import cedule.app.data.entities.Task;
 import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.TimeUtils;
 
@@ -37,9 +37,9 @@ public class TaskSettingActivity extends AppCompatActivity {
 
     private int getCategoryId(String name) {
         // if the category name existed, this code line will be ignored
-        MainActivity.getDatabase().tasksDAO().addCategory(name);
+        MainActivity.getDatabase().categoryDAO().addCategory(name);
 
-        return MainActivity.getDatabase().tasksDAO().getCategoryByName(name).id;
+        return MainActivity.getDatabase().categoryDAO().getCategoryByName(name).id;
     }
 
     private void exitPage() {
@@ -203,7 +203,7 @@ public class TaskSettingActivity extends AppCompatActivity {
         // determine whether editing a task or creating a task
         if (getIntent().hasExtra("taskId")) {
             new Thread(() -> {
-                Tasks task = MainActivity.getDatabase().tasksDAO().getTaskById(getIntent().getExtras().getInt("taskId"));
+                Task task = MainActivity.getDatabase().tasksDAO().getTaskById(getIntent().getExtras().getInt("taskId"));
 
                 runOnUiThread(() -> {
                     ((EditText) findViewById(R.id.tv_task_name)).setText(task.title);
@@ -241,7 +241,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
 
                 if (task.category != null) {
-                    Categories category = MainActivity.getDatabase().tasksDAO().getCategoryById(task.category);
+                    Category category = MainActivity.getDatabase().categoryDAO().getCategoryById(task.category);
                     runOnUiThread(() -> {
                         ((TextView) findViewById(R.id.tv_category_desc)).setText(category.name);
                     });
@@ -252,7 +252,7 @@ public class TaskSettingActivity extends AppCompatActivity {
         new Thread(() -> {
             AutoCompleteTextView atv_category = findViewById(R.id.tv_category_desc);
 
-            Categories[] categories = MainActivity.getDatabase().tasksDAO().getAllCategory();
+            Category[] categories = MainActivity.getDatabase().categoryDAO().getAllCategory();
             String[] categoryNames = new String[categories.length];
 
             for (int i=0; i < categories.length; i++) {

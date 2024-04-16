@@ -19,8 +19,8 @@ import java.util.List;
 
 import cedule.app.R;
 import cedule.app.adapters.TaskAdapter;
-import cedule.app.data.Categories;
-import cedule.app.data.Tasks;
+import cedule.app.data.entities.Category;
+import cedule.app.data.entities.Task;
 
 public class TaskActivity extends AppCompatActivity {
     private void handleOnClickSort(View v) {
@@ -29,7 +29,7 @@ public class TaskActivity extends AppCompatActivity {
         menu.setOnMenuItemClickListener(item -> {
             new Thread(() -> {
                 RecyclerView rvTasks = findViewById(R.id.rv_tasks);
-                List<Tasks> tasks = null;
+                List<Task> tasks = null;
 
                 int itemId = item.getItemId();
 
@@ -46,7 +46,7 @@ public class TaskActivity extends AppCompatActivity {
                     tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
                 }
 
-                List<Tasks> finalTasks = tasks;
+                List<Task> finalTasks = tasks;
                 runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));
             }).start();
 
@@ -94,10 +94,10 @@ public class TaskActivity extends AppCompatActivity {
     private void getTasksByCategory(String name) {
         new Thread(() -> {
             RecyclerView rvTasks = findViewById(R.id.rv_tasks);
-            Categories category = MainActivity.getDatabase().tasksDAO().getCategoryByName(name);
+            Category category = MainActivity.getDatabase().categoryDAO().getCategoryByName(name);
 
             if (category != null) {
-                List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
+                List<Task> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
                 runOnUiThread(() -> {
                     rvTasks.setAdapter(new TaskAdapter(this, tasks));
                 });
@@ -124,7 +124,7 @@ public class TaskActivity extends AppCompatActivity {
                     }
                     case 1: {
                         new Thread(() -> {
-                            List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+                            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
                             runOnUiThread(() -> {
                                 rvTasks.setAdapter(new TaskAdapter(TaskActivity.this, tasks));
                             });
@@ -154,7 +154,7 @@ public class TaskActivity extends AppCompatActivity {
             RecyclerView rvTasks = findViewById(R.id.rv_tasks);
 
             new Thread(() -> {
-                List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+                List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
 
                 runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
             }).start();
@@ -170,7 +170,7 @@ public class TaskActivity extends AppCompatActivity {
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
 
         new Thread(() -> {
-            List<Tasks> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
 
             runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
         }).start();
