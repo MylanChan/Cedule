@@ -2,10 +2,13 @@ package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,24 +16,31 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import cedule.app.R;
 import cedule.app.data.Categories;
 import cedule.app.data.Tasks;
+import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.TimeUtils;
 
 public class TaskSettingActivity extends AppCompatActivity {
     private boolean isNotify = false;
     private Long startDate = null;
     private Integer startTime = null;
+
+    private int getCategoryId(String name) {
+        // if the category name existed, this code line will be ignored
+        MainActivity.getDatabase().tasksDAO().addCategory(name);
+
+        return MainActivity.getDatabase().tasksDAO().getCategoryByName(name).id;
+    }
 
     private void exitPage() {
         new AlertDialog.Builder(this)
@@ -45,13 +55,11 @@ public class TaskSettingActivity extends AppCompatActivity {
                         if (title.equals("")) title = null;
 
                         Integer categoryId = null;
-
-
                         String categoryName =  ((TextView) findViewById(R.id.tv_category_desc)).getText().toString();
 
-                        if (categoryName != "") {
-                            MainActivity.getDatabase().tasksDAO().addCategory(categoryName);
-                            categoryId = MainActivity.getDatabase().tasksDAO().getCategoryByName(categoryName).id;
+                        // empty text field is empty string rather than null
+                        if (!categoryName.equals("")) {
+                            categoryId = getCategoryId(categoryName);
                         }
 
                         String note = ((EditText) findViewById(R.id.tv_note)).getText().toString();
@@ -80,6 +88,17 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                     }).start();
 
+                    if (startDate != null && startTime != null) {
+                        Intent intent = new Intent(getApplicationContext(), TaskNotifyService.class);
+                        PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent,
+                                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        System.out.println(startDate);
+                        System.out.println(startTime);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, startDate + startTime, pi);
+                    }
+
                     dialog.dismiss();
                 })
                 .setNegativeButton("NO", (dialog, button) -> {
@@ -93,23 +112,30 @@ public class TaskSettingActivity extends AppCompatActivity {
         exitPage();
     }
 
+    private void setPropertyEnableStyle(boolean isEnable, ImageView iv, TextView tv, int iconRes) {
+        iv.setImageResource(iconRes);
+
+        if (isEnable) {
+            iv.setImageTintList(ColorStateList.valueOf(Color.BLACK));
+            tv.setTextColor(Color.BLACK);
+        }
+        else {
+            iv.setImageTintList(ColorStateList.valueOf(Color.GRAY));
+            tv.setTextColor(Color.GRAY);
+        }
+    }
+
     private void handleOnClickNotify(boolean notify) {
         isNotify = notify;
-
         ImageView ivNotify = findViewById(R.id.iv_notify);
+
+        setPropertyEnableStyle(isNotify, ivNotify,
+                findViewById(R.id.tv_notify_title),
+                isNotify ? R.drawable.ic_notification_active : R.drawable.ic_notification);
+
         TextView tvNotify = findViewById(R.id.tv_notify_desc);
-
-        if (isNotify)  {
-            ivNotify.setImageResource(R.drawable.ic_notification_active);
-            ivNotify.setImageTintList(ColorStateList.valueOf(Color.BLACK));
-
-            tvNotify.setVisibility(View.VISIBLE);
-            return;
-        }
-        ivNotify.setImageResource(R.drawable.ic_notification);
-        ivNotify.setImageTintList(ColorStateList.valueOf(Color.GRAY));
-
-        tvNotify.setVisibility(View.GONE);
+        if (isNotify)  tvNotify.setVisibility(View.VISIBLE);
+        else tvNotify.setVisibility(View.GONE);
     }
 
     @Override
@@ -123,9 +149,8 @@ public class TaskSettingActivity extends AppCompatActivity {
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
             if (startDate == null) {
-                Toast toast = new Toast(this);
-                toast.setText("You need to configure the date first.");
-                toast.show();
+                Toast.makeText(this, "You need to configure the date first", Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
 
@@ -136,11 +161,10 @@ public class TaskSettingActivity extends AppCompatActivity {
             mTimePicker = new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
                 ((TextView) findViewById(R.id.tv_time_desc)).setText( selectedHour + ":" + selectedMinute);
 
-                Calendar time = Calendar.getInstance();
-                time.setTimeInMillis(0);
-                time.set(Calendar.HOUR, selectedHour);
-                time.set(Calendar.MINUTE, selectedMinute);
-                startTime = (int) time.getTimeInMillis();
+                startTime = (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
+                System.out.println("Selected hours: " + selectedHour);
+                System.out.println("Selected Minutes: " + selectedMinute);
+                setPropertyEnableStyle(true, findViewById(R.id.iv_time), findViewById(R.id.tv_time_title), R.drawable.ic_time);
             }, hour, minute, true);
             mTimePicker.show();
         });
@@ -155,10 +179,17 @@ public class TaskSettingActivity extends AppCompatActivity {
                             calendar.set(Calendar.YEAR, year);
                             calendar.set(Calendar.MONTH, month);
                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                            calendar.set(Calendar.MINUTE, 0);
+                            calendar.set(Calendar.SECOND, 0);
+                            calendar.set(Calendar.MILLISECOND, 0);
 
                             startDate = calendar.getTimeInMillis();
                             ((TextView) findViewById(R.id.tv_date_desc))
                                     .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
+
+                            setPropertyEnableStyle(true, findViewById(R.id.iv_date),
+                                    findViewById(R.id.tv_date_title), R.drawable.ic_calendar);
                         },
                         Calendar.getInstance().get(Calendar.YEAR),
                         Calendar.getInstance().get(Calendar.MONTH),
@@ -171,6 +202,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
         findViewById(R.id.ll_notify).setOnClickListener(v -> handleOnClickNotify(!isNotify));
 
+        // determine whether editing a task or creating a task
         if (getIntent().hasExtra("taskId")) {
             new Thread(() -> {
                 Tasks task = MainActivity.getDatabase().tasksDAO().getTaskById(getIntent().getExtras().getInt("taskId"));
@@ -185,12 +217,20 @@ public class TaskSettingActivity extends AppCompatActivity {
                     if (task.startDate != null) {
                         startDate = task.startDate;
 
+                        setPropertyEnableStyle(true, findViewById(R.id.iv_date),
+                                findViewById(R.id.tv_date_title), R.drawable.ic_calendar);
+
                         ((TextView) findViewById(R.id.tv_date_desc))
                             .setText(TimeUtils.toDateString(task.startDate));
 
                         if (task.startTime != null) {
                             startTime = task.startTime;
-                            ((TextView) findViewById(R.id.tv_time_desc)).setText(TimeUtils.toTimeString(task.startTime));
+
+                            setPropertyEnableStyle(true, findViewById(R.id.iv_time),
+                                    findViewById(R.id.tv_time_title), R.drawable.ic_time);
+
+                            ((TextView) findViewById(R.id.tv_time_desc))
+                                .setText(TimeUtils.toTimeString(startTime));
                         }
 
                         if (task.isNotify != null) {

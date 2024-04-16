@@ -1,6 +1,7 @@
 package cedule.app.utils;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
     private static String replenishZero(int target, int n) {
@@ -21,12 +22,11 @@ public class TimeUtils {
     }
 
 
-    public static String toTimeString(int ms) {
+    public static String toTimeString(long ms) {
+        int hour = (int) TimeUnit.MILLISECONDS.toHours(ms);
+        int min = (int) (TimeUnit.MILLISECONDS.toMinutes(ms) - hour * 60);
 
-        Calendar time = Calendar.getInstance();
-        time.setTimeInMillis(ms);
-
-        return time.get(Calendar.HOUR) + ":" + time.get(Calendar.MINUTE);
+        return replenishZero(hour, 2) + ":" + replenishZero(min, 2);
     }
 
     public static String toDateString(long ms) {

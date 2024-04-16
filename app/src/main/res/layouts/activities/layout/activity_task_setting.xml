@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTintMode="src_in"
     android:clipToPadding="false"
     android:orientation="vertical"
     android:padding="12dp"
@@ -109,9 +110,11 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/iv_date"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="12dp"
+            android:tint="@color/onPrimaryVariant"
             app:srcCompat="@drawable/ic_calendar" />
 
         <TextView
@@ -121,7 +124,8 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="24dp"
             android:gravity="center_vertical"
-            android:text="Date" />
+            android:text="Date"
+            android:textColor="@color/onPrimaryVariant" />
 
         <TextView
             android:id="@+id/tv_date_desc"
@@ -141,10 +145,11 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/iv_time"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="12dp"
+            android:tint="@color/onPrimaryVariant"
             app:srcCompat="@drawable/ic_time" />
 
         <TextView
@@ -154,7 +159,8 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="24dp"
             android:gravity="center_vertical"
-            android:text="Time" />
+            android:text="Time"
+            android:textColor="@color/onPrimaryVariant" />
 
         <TextView
             android:id="@+id/tv_time_desc"
@@ -178,6 +184,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="12dp"
+            android:tint="@color/onPrimaryVariant"
+            android:tintMode="src_in"
             app:srcCompat="@drawable/ic_notification" />
 
         <TextView
@@ -187,7 +195,8 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="24dp"
             android:gravity="center_vertical"
-            android:text="Notify" />
+            android:text="Notify"
+            android:textColor="@color/onPrimaryVariant" />
 
         <TextView
             android:id="@+id/tv_notify_desc"

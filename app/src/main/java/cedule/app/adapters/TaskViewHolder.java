@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.concurrent.TimeUnit;
+
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
 import cedule.app.activities.TaskSettingActivity;
@@ -80,7 +82,9 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
         if (task.startDate != null) {
             if (task.startTime != null) {
-                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + TimeUtils.toTimeString(task.startTime));
+                int hour = (int) TimeUnit.MILLISECONDS.toHours(task.startTime);
+                int min = (int) (TimeUnit.MILLISECONDS.toMinutes(task.startTime) - hour * 60);
+                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + hour + ":" + min);
                 return;
             }
             tvMsg.setText(TimeUtils.toDateString(task.startDate));

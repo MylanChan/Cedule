@@ -17,6 +17,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 
 import cedule.app.R;
+import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.TimeUtils;
 
 public class FocusActivity extends AppCompatActivity {
@@ -59,6 +60,10 @@ public class FocusActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_focus);
+
+        // stop service (if has one) -> remove notification + alarm
+        Intent service = new Intent(getApplicationContext(), TaskNotifyService.class);
+        getApplicationContext().stopService(service);
 
         findViewById(R.id.btn_start).setOnClickListener(v -> {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

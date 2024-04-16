@@ -15,16 +15,24 @@ import cedule.app.R;
 import cedule.app.activities.FocusActivity;
 
 public class TaskNotifyService extends Service {
+    private AlarmPlayer player;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        player.release();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        Intent nextActivity = new Intent(getApplicationContext(), FocusActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, nextActivity, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), FocusActivity.class),
+                PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationManager manager =
-                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
+        NotificationManager manager = (NotificationManager)
+                getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel =
@@ -32,7 +40,6 @@ public class TaskNotifyService extends Service {
 
             manager.createNotificationChannel(channel);
         }
-
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(getApplicationContext(), "Cedule")
@@ -42,8 +49,11 @@ public class TaskNotifyService extends Service {
                     .setContentTitle("Cedule")
                     .setContentText("Time to work");
 
-        startForeground(1, builder.build());
+        if (player != null) player.release();
+        player = new AlarmPlayer(getApplicationContext());
+        player.run();
 
+        startForeground(1, builder.build());
         return START_STICKY;
     }
 
