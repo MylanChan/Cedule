@@ -183,11 +183,11 @@ public class TaskSettingActivity extends AppCompatActivity {
                             calendar.set(Calendar.MILLISECOND, 0);
 
                             startDate = calendar.getTimeInMillis();
-                            ((TextView) findViewById(R.id.tv_date_desc))
+                            ((TextView) findViewById(R.id.tv_endDate))
                                     .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
 
                             setPropertyEnableStyle(true, findViewById(R.id.iv_date),
-                                    findViewById(R.id.tv_date_title), R.drawable.ic_calendar);
+                                    findViewById(R.id.tv_startDate), R.drawable.ic_calendar);
                         },
                         Calendar.getInstance().get(Calendar.YEAR),
                         Calendar.getInstance().get(Calendar.MONTH),
@@ -216,9 +216,9 @@ public class TaskSettingActivity extends AppCompatActivity {
                         startDate = task.startDate;
 
                         setPropertyEnableStyle(true, findViewById(R.id.iv_date),
-                                findViewById(R.id.tv_date_title), R.drawable.ic_calendar);
+                                findViewById(R.id.tv_startDate), R.drawable.ic_calendar);
 
-                        ((TextView) findViewById(R.id.tv_date_desc))
+                        ((TextView) findViewById(R.id.tv_endDate))
                             .setText(TimeUtils.toDateString(task.startDate));
 
                         if (task.startTime != null) {

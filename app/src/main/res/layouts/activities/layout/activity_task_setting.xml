@@ -118,7 +118,7 @@
             app:srcCompat="@drawable/ic_calendar" />
 
         <TextView
-            android:id="@+id/tv_date_title"
+            android:id="@+id/tv_startDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="12dp"
@@ -128,7 +128,7 @@
             android:textColor="@color/onPrimaryVariant" />
 
         <TextView
-            android:id="@+id/tv_date_desc"
+            android:id="@+id/tv_endDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="12dp"

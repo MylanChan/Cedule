@@ -21,6 +21,7 @@ import cedule.app.R;
 import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
+import cedule.app.dialogs.FilterDialog;
 
 public class TaskActivity extends AppCompatActivity {
     private void handleOnClickSort(View v) {
@@ -186,6 +187,10 @@ public class TaskActivity extends AppCompatActivity {
 
         setTabWidth(0, 0.5f);
         initialOnTabSelectedListener();
+
+        findViewById(R.id.ib_filter).setOnClickListener(v -> {
+            new FilterDialog().show(getSupportFragmentManager(), null);
+        });
 
         findViewById(R.id.ib_sort).setOnClickListener(this::handleOnClickSort);
         findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
