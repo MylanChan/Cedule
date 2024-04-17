@@ -67,8 +67,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="Start date"
-            android:textColor="@color/onPrimaryVariant" />
+            android:hint="Start date" />
 
         <TextView
             android:id="@+id/textView5"
