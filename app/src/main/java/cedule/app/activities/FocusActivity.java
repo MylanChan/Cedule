@@ -21,16 +21,16 @@ import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.TimeUtils;
 
 public class FocusActivity extends AppCompatActivity {
-    public final static int STATUS_STOP = 0;
-    public final static int STATUS_COUNTING = 2;
-
-    private int status = STATUS_STOP;
+    private boolean isCounting = false;
 
     private void startCount() {
+        // avoid stopwatch block the UI thread
         new Thread(() -> {
             try {
                 int count = 0;
-                while (status != STATUS_STOP) {
+
+                // run every second until user click the stop button
+                while (isCounting) {
                     String displayText = TimeUtils.toTimeNotation(count);
                     runOnUiThread(() -> {
                         ((TextView) findViewById(R.id.tv_count)).setText(displayText);
@@ -44,6 +44,23 @@ public class FocusActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    private void requestDndPermission() {
+        new AlertDialog.Builder(this)
+                .setTitle("Require permission")
+                .setMessage("to enable Do not disturb mode.")
+                .setPositiveButton("OK", (dialogInterface, i) -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Not now", (dialogInterface, i) -> {
+                    isCounting = true;
+                    startCount();
+
+                    ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_pause);
+                })
+                .show();
     }
 
     @Override
@@ -61,49 +78,32 @@ public class FocusActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_focus);
 
-        // stop service (if has one) -> remove notification + alarm
+        // stop service (if running) -> remove notification + alarm
         Intent service = new Intent(getApplicationContext(), TaskNotifyService.class);
         getApplicationContext().stopService(service);
 
         findViewById(R.id.btn_start).setOnClickListener(v -> {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            if (status == STATUS_COUNTING) {
-                status = STATUS_STOP;
+            if (isCounting) {
+                isCounting = false;
                 if (manager.isNotificationPolicyAccessGranted()) {
                     manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
                 }
                 ((TextView) findViewById(R.id.tv_count)).setText(TimeUtils.toTimeNotation(0));
                 ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_play);
+                return;
             }
-            else if (status == STATUS_STOP) {
-                if (!manager.isNotificationPolicyAccessGranted()) {
-                    new AlertDialog.Builder(this)
-                            .setTitle("Require permission")
-                            .setMessage("to enable Do not disturb mode.")
-                            .setPositiveButton("OK", (dialogInterface, i) -> {
-                                Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-                                startActivity(intent);
-                            })
-                            .setNegativeButton("Not now", (dialogInterface, i) -> {
-                                status = STATUS_COUNTING;
-
-                                startCount();
-
-                                ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_pause);
-                            })
-                            .show();
-                    return;
-                }
-
-                manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE);
-
-                status = STATUS_COUNTING;
-
-                startCount();
-
-                ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_pause);
+            if (!manager.isNotificationPolicyAccessGranted()) {
+                requestDndPermission();
+                return;
             }
+            manager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE);
+
+            isCounting = true;
+            startCount();
+
+            ((ImageButton) findViewById(R.id.btn_start)).setImageResource(R.drawable.ic_pause);
         });
 
         findViewById(R.id.ib_exit).setOnClickListener(v -> finish());

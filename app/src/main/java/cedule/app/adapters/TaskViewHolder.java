@@ -22,9 +22,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     public final View view;
     private final TaskAdapter adapter;
 
-    public static final int STATUS_NORMAL = 0;
-    public static final int STATUS_SELECTED = 1;
-    public int status = STATUS_NORMAL;
+    public boolean isSelectMode = false;
 
     private AppCompatActivity activity;
 
@@ -49,13 +47,13 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void toggleSelection() {
-        if (status == STATUS_NORMAL) {
-            status = STATUS_SELECTED;
+        if (!isSelectMode) {
+            isSelectMode = true;
             view.setBackgroundColor(Color.parseColor("#AAE6E6E6"));
             adapter.selectTask(getAdapterPosition());
         }
-        else if (status == STATUS_SELECTED) {
-            status = STATUS_NORMAL;
+        else {
+            isSelectMode = false;
             setNormalStyle();
         }
     }
@@ -107,7 +105,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void initialize() {
-        status = STATUS_NORMAL;
+        isSelectMode = false;
         setNormalStyle();
     }
 
