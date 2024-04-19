@@ -7,8 +7,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -196,5 +198,38 @@ public class TaskActivity extends AppCompatActivity {
         findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
+
+        getSupportFragmentManager().setFragmentResultListener("filterTask", this, (requestKey, result) -> {
+            new Thread(() -> {
+                String category = result.getString("category");
+
+                Long startDate = result.getLong("startDate", -1);
+                Long endDate = result.getLong("endDate", -1);
+
+                List<Task> tasks;
+
+                if (category != null) {
+                    MainActivity.getDatabase().categoryDAO().addCategory(category);
+                    int catId = MainActivity.getDatabase().categoryDAO().getCategoryByName(category).id;
+
+                    if (startDate == -1 && endDate == -1) {
+                        tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(
+                            catId, startDate, endDate
+                        );
+                    }
+                    else {
+                        tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(catId);
+                    }
+                }
+                else {
+                    tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(startDate, endDate);
+                }
+
+
+                List<Task> finalTasks = tasks;
+                runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));
+            }).start();
+
+        });
     }
 }

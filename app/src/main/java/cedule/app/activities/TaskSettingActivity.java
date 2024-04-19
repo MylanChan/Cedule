@@ -88,14 +88,12 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                     }).start();
 
-                    if (startDate != null && startTime != null) {
+                    if (isNotify && startDate != null && startTime != null) {
                         Intent intent = new Intent(getApplicationContext(), TaskNotifyService.class);
                         PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent,
                                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        System.out.println(startDate);
-                        System.out.println(startTime);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, startDate + startTime, pi);
                     }
 

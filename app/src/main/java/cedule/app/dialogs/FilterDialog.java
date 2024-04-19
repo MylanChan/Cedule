@@ -3,11 +3,9 @@ package cedule.app.dialogs;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -17,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
@@ -28,8 +25,8 @@ import cedule.app.utils.TimeUtils;
 public class FilterDialog extends DialogFragment {
     private View view;
 
-    private long startDateTime;
-    private long endDateTime;
+    private Long startDate;
+    private Long endDate;
 
     private boolean isStartDate = false;
 
@@ -48,22 +45,18 @@ public class FilterDialog extends DialogFragment {
                     calendar.set(Calendar.SECOND, 0);
                     calendar.set(Calendar.MILLISECOND, 0);
 
-                    new TimePickerDialog(requireActivity(), (timePicker, selectedHour, selectedMinute) -> {
+                    if (isStartDate) {
+                        startDate = calendar.getTimeInMillis();
 
-                        if (isStartDate) {
-                            startDateTime = calendar.getTimeInMillis() + (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
+                        ((TextView) view.findViewById(R.id.tv_startDate))
+                                .setText(TimeUtils.toDateString(startDate));
+                    }
+                    else {
+                        endDate = calendar.getTimeInMillis();
+                        ((TextView) view.findViewById(R.id.tv_endDate))
+                                .setText(TimeUtils.toDateString(endDate));
+                    }
 
-                            ((TextView) view.findViewById(R.id.tv_startDate))
-                                    .setText(TimeUtils.toDateString(startDateTime) + " " + selectedHour + ":" + selectedMinute);
-                        }
-                        else {
-                            endDateTime = calendar.getTimeInMillis() + (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
-                            ((TextView) view.findViewById(R.id.tv_endDate))
-                                    .setText(TimeUtils.toDateString(startDateTime) + " " + selectedHour + ":" + selectedMinute);
-                        }
-
-
-                    }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true).show();
                 },
                 Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),
@@ -90,7 +83,20 @@ public class FilterDialog extends DialogFragment {
         builder.setView(view);
 
         builder.setPositiveButton("Filter", (dialog, which) -> {
+            Bundle resultBundle = new Bundle();
 
+            String category = ((AutoCompleteTextView) view.findViewById(R.id.tv_category_desc)).getText().toString();
+
+            if (category != null && category.length() > 0) {
+                System.out.println("Get category " + category);
+                resultBundle.putString("category", category);
+            }
+
+            if (startDate != null && endDate != null) {
+                resultBundle.putLong("startDate", startDate);
+                resultBundle.putLong("endDate", endDate);
+            }
+            getParentFragmentManager().setFragmentResult("filterTask", resultBundle);
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dismiss());

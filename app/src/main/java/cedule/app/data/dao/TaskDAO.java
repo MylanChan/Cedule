@@ -44,4 +44,12 @@ public interface TaskDAO {
 
     @Query("SELECT * FROM tasks ORDER BY title")
     List<Task> getTasksInNameAsc();
+
+    @Query("SELECT * FROM tasks " +
+            "WHERE category=:category AND startDate BETWEEN :startDate AND :endDate")
+    List<Task> getTaskByFilter(int category, long startDate, long endDate);
+
+    @Query("SELECT * FROM tasks " +
+            "WHERE startDate BETWEEN :startDate AND :endDate")
+    List<Task> getTaskByFilter(long startDate, long endDate);
 }
