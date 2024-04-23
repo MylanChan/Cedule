@@ -92,7 +92,7 @@
             android:text="Category" />
 
         <AutoCompleteTextView
-            android:id="@+id/tv_category_desc"
+            android:id="@+id/atv_category"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="12dp"

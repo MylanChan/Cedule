@@ -55,7 +55,7 @@ public class TaskSettingActivity extends AppCompatActivity {
                         if (title.equals("")) title = null;
 
                         Integer categoryId = null;
-                        String categoryName =  ((TextView) findViewById(R.id.tv_category_desc)).getText().toString();
+                        String categoryName =  ((TextView) findViewById(R.id.atv_category)).getText().toString();
 
                         // empty text field is empty string rather than null
                         if (!categoryName.equals("")) {
@@ -129,7 +129,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
         setPropertyEnableStyle(isNotify, ivNotify,
                 findViewById(R.id.tv_notify_title),
-                isNotify ? R.drawable.ic_notification_active : R.drawable.ic_notification);
+                isNotify ? R.drawable.ic_notification_fill : R.drawable.ic_notification);
 
         TextView tvNotify = findViewById(R.id.tv_notify_desc);
         if (isNotify)  tvNotify.setVisibility(View.VISIBLE);
@@ -157,42 +157,35 @@ public class TaskSettingActivity extends AppCompatActivity {
             int minute = mcurrentTime.get(Calendar.MINUTE);
             TimePickerDialog mTimePicker;
             mTimePicker = new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
-                ((TextView) findViewById(R.id.tv_time_desc)).setText( selectedHour + ":" + selectedMinute);
-
                 startTime = (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
-                setPropertyEnableStyle(true, findViewById(R.id.iv_time), findViewById(R.id.tv_time_title), R.drawable.ic_time);
+                ((TextView) findViewById(R.id.tv_time_desc)).setText(TimeUtils.toTimeString(startTime));
+
+                setPropertyEnableStyle(true, findViewById(R.id.iv_time), findViewById(R.id.tv_time_title), R.drawable.ic_time_fill);
             }, hour, minute, true);
             mTimePicker.show();
         });
 
         findViewById(R.id.ll_date).setOnClickListener(v -> {
-                DatePickerDialog datepicker;
-
-                datepicker = new DatePickerDialog(
+                new DatePickerDialog(
                         this,
                         (view, year, month, dayOfMonth) -> {
                             Calendar calendar = Calendar.getInstance();
                             calendar.set(Calendar.YEAR, year);
                             calendar.set(Calendar.MONTH, month);
                             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                            calendar.set(Calendar.HOUR_OF_DAY, 0);
-                            calendar.set(Calendar.MINUTE, 0);
-                            calendar.set(Calendar.SECOND, 0);
-                            calendar.set(Calendar.MILLISECOND, 0);
+                            TimeUtils.setMidNight(calendar);
 
                             startDate = calendar.getTimeInMillis();
                             ((TextView) findViewById(R.id.tv_endDate))
                                     .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
 
                             setPropertyEnableStyle(true, findViewById(R.id.iv_date),
-                                    findViewById(R.id.tv_startDate), R.drawable.ic_calendar);
+                                    findViewById(R.id.tv_startDate), R.drawable.ic_calendar_fill);
                         },
                         Calendar.getInstance().get(Calendar.YEAR),
                         Calendar.getInstance().get(Calendar.MONTH),
-                        Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-
-
-                datepicker.show();
+                        Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                        .show();
 
         });
 
@@ -241,14 +234,14 @@ public class TaskSettingActivity extends AppCompatActivity {
                 if (task.category != null) {
                     Category category = MainActivity.getDatabase().categoryDAO().getCategoryById(task.category);
                     runOnUiThread(() -> {
-                        ((TextView) findViewById(R.id.tv_category_desc)).setText(category.name);
+                        ((TextView) findViewById(R.id.atv_category)).setText(category.name);
                     });
                 }
             }).start();
         }
 
         new Thread(() -> {
-            AutoCompleteTextView atv_category = findViewById(R.id.tv_category_desc);
+            AutoCompleteTextView atvCategory = findViewById(R.id.atv_category);
 
             Category[] categories = MainActivity.getDatabase().categoryDAO().getAllCategory();
             String[] categoryNames = new String[categories.length];
@@ -259,7 +252,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categoryNames);
-                atv_category.setAdapter(adapter);
+                atvCategory.setAdapter(adapter);
             });
         }).start();
     }

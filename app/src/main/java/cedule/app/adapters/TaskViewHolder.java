@@ -1,8 +1,11 @@
 package cedule.app.adapters;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -39,6 +42,17 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             MainActivity.getDatabase().tasksDAO()
                     .updateTaskStatus(getTask().id, checkBox.isChecked() ? 1 : 0);
         }).start();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if (checkBox.isChecked()) {
+            editor.putLong("TaskCompleted", sharedPref.getLong("TaskCompleted", 0)+1);
+        }
+        else {
+            editor.putLong("TaskCompleted", sharedPref.getLong("TaskCompleted", 0)-1);
+        }
+
+        editor.apply();
     }
 
     private void setNormalStyle() {
@@ -82,7 +96,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             if (task.startTime != null) {
                 int hour = (int) TimeUnit.MILLISECONDS.toHours(task.startTime);
                 int min = (int) (TimeUnit.MILLISECONDS.toMinutes(task.startTime) - hour * 60);
-                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + hour + ":" + min);
+
+                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + TimeUtils.toTimeString((hour*60+min)*60*1000));
                 return;
             }
             tvMsg.setText(TimeUtils.toDateString(task.startDate));
