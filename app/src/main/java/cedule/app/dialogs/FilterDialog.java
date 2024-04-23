@@ -106,7 +106,7 @@ public class FilterDialog extends DialogFragment {
         new Thread(() -> {
             AutoCompleteTextView atv_category = view.findViewById(R.id.tv_category_desc);
 
-            Category[] categories = MainActivity.getDatabase().categoryDAO().getAllCategory();
+            Category[] categories = MainActivity.getDatabase().categoryDAO().getAll();
             String[] categoryNames = new String[categories.length];
 
             for (int i=0; i < categories.length; i++) {

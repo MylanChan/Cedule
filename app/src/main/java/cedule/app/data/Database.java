@@ -12,7 +12,7 @@ import cedule.app.data.entities.Task;
                 Category.class,
                 Task.class
         },
-        version = 5
+        version = 12
 )
 public abstract class Database extends RoomDatabase {
     public abstract TaskDAO tasksDAO();

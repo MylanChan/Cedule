@@ -1,8 +1,8 @@
 package cedule.app.adapters;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.preference.PreferenceManager;
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import cedule.app.R;
 import cedule.app.activities.MainActivity;
 import cedule.app.activities.TaskSettingActivity;
+import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.utils.TimeUtils;
 
@@ -104,6 +105,19 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         }
         else {
             tvMsg.setVisibility(View.GONE);
+        }
+
+        if (task.category != null) {
+            new Thread(() -> {
+                System.out.println(task.id);
+
+                Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);
+
+                TextView tvCategory = view.findViewById(R.id.tv_category);
+                tvCategory.setText(category.name);
+                tvCategory.setBackgroundTintList(ColorStateList.valueOf(category.color));
+                tvCategory.setVisibility(View.VISIBLE);
+            }).start();
         }
     }
 

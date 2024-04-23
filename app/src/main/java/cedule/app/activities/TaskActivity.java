@@ -7,10 +7,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -97,7 +95,7 @@ public class TaskActivity extends AppCompatActivity {
     private void getTasksByCategory(String name) {
         new Thread(() -> {
             RecyclerView rvTasks = findViewById(R.id.rv_tasks);
-            Category category = MainActivity.getDatabase().categoryDAO().getCategoryByName(name);
+            Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
 
             if (category != null) {
                 List<Task> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
@@ -209,8 +207,8 @@ public class TaskActivity extends AppCompatActivity {
                 List<Task> tasks;
 
                 if (category != null) {
-                    MainActivity.getDatabase().categoryDAO().addCategory(category);
-                    int catId = MainActivity.getDatabase().categoryDAO().getCategoryByName(category).id;
+                    MainActivity.getDatabase().categoryDAO().add(category, null);
+                    int catId = MainActivity.getDatabase().categoryDAO().getByName(category).id;
 
                     if (startDate == -1 && endDate == -1) {
                         tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(

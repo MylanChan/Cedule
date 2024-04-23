@@ -1,5 +1,7 @@
 package cedule.app.data.entities;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,4 +13,6 @@ public class Category {
 
     @NonNull
     public String name;
+
+    public Integer color;
 }

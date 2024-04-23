@@ -10,13 +10,14 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import cedule.app.R;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
+import cedule.app.dialogs.ColorDialog;
 import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.TimeUtils;
 
@@ -41,10 +43,14 @@ public class TaskSettingActivity extends AppCompatActivity {
     private Integer startTime = null;
 
     private int getCategoryId(String name) {
-        // if the category name existed, this code line will be ignored
-        MainActivity.getDatabase().categoryDAO().addCategory(name);
+        Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
+        if (category == null) {
+            MainActivity.getDatabase().categoryDAO().add(name, findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor());
+        }
+        int id = MainActivity.getDatabase().categoryDAO().getByName(name).id;
+        MainActivity.getDatabase().categoryDAO().updateColor(id, findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor());
 
-        return MainActivity.getDatabase().categoryDAO().getCategoryByName(name).id;
+        return id;
     }
 
     private void exitPage() {
@@ -255,7 +261,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
 
                 if (task.category != null) {
-                    Category category = MainActivity.getDatabase().categoryDAO().getCategoryById(task.category);
+                    Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);
                     runOnUiThread(() -> {
                         ((TextView) findViewById(R.id.atv_category)).setText(category.name);
                     });
@@ -263,10 +269,14 @@ public class TaskSettingActivity extends AppCompatActivity {
             }).start();
         }
 
+        findViewById(R.id.ll_color_picker).setOnClickListener(v -> {
+            new ColorDialog().show(getSupportFragmentManager(), null);
+        });
+
         new Thread(() -> {
             AutoCompleteTextView atvCategory = findViewById(R.id.atv_category);
 
-            Category[] categories = MainActivity.getDatabase().categoryDAO().getAllCategory();
+            Category[] categories = MainActivity.getDatabase().categoryDAO().getAll();
             String[] categoryNames = new String[categories.length];
 
             for (int i=0; i < categories.length; i++) {
@@ -278,5 +288,37 @@ public class TaskSettingActivity extends AppCompatActivity {
                 atvCategory.setAdapter(adapter);
             });
         }).start();
+
+        ((AutoCompleteTextView) findViewById(R.id.atv_category)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = ((AutoCompleteTextView) findViewById(R.id.atv_category)).getText().toString();
+
+                if (text.length() >= 1) {
+                    findViewById(R.id.ll_color_picker).setVisibility(View.VISIBLE);
+                    new Thread(() -> {
+                        Category category = MainActivity.getDatabase().categoryDAO().getByName(text);
+                        if (category != null) {
+                            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(category.color));
+                        }
+                        else {
+                            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                        }
+                    }).start();
+                }
+                else {
+                    findViewById(R.id.ll_color_picker).setVisibility(View.GONE);
+                }
+            }
+        });
+        getSupportFragmentManager().setFragmentResultListener("pickColor", this, (requestKey, result) -> {
+            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(result.getInt("color")));
+        });
     }
 }

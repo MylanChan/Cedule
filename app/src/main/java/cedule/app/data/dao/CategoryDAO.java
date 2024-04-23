@@ -8,14 +8,17 @@ import cedule.app.data.entities.Category;
 @Dao
 public interface CategoryDAO {
     @Query("SELECT * FROM categories WHERE name=:name LIMIT 1")
-    Category getCategoryByName(String name);
+    Category getByName(String name);
 
     @Query("SELECT * FROM categories WHERE id=:id LIMIT 1")
-    Category getCategoryById(int id);
+    Category getById(int id);
 
-    @Query("INSERT OR IGNORE INTO categories (name) VALUES (:name)")
-    void addCategory(String name);
+    @Query("INSERT INTO categories (name, color) VALUES (:name, :color)")
+    void add(String name, Integer color);
+
+    @Query("UPDATE categories SET color=:color WHERE id=:id")
+    void updateColor(int id, int color);
 
     @Query("SELECT * FROM categories")
-    Category[] getAllCategory();
+    Category[] getAll();
 }

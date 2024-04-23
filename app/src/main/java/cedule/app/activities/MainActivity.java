@@ -3,7 +3,6 @@ package cedule.app.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,6 +22,15 @@ public class MainActivity extends AppCompatActivity {
     public static Database getDatabase() {
         return database;
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        long taskCompleted = sharedPref.getLong("TaskCompleted", 0);
+        ((TextView) findViewById(R.id.tv_task)).setText(taskCompleted + " tasks completed");
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putLong("StartDate", System.currentTimeMillis());
 
-            ((TextView) findViewById(R.id.tv_info)).setText(
+            ((TextView) findViewById(R.id.tv_day)).setText(
                     "You used our service 0 days and completed " + taskCompleted + " tasks"
             );
 
@@ -78,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             long dayUse = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - startDate);
-            ((TextView) findViewById(R.id.tv_info)).setText(
-                    "You used our service " + dayUse + "days and completed " + taskCompleted + " tasks"
-            );
+            ((TextView) findViewById(R.id.tv_day)).setText("You used our service " + dayUse + " days ");
+
+            ((TextView) findViewById(R.id.tv_task)).setText(taskCompleted + " tasks completed");
         }
 
     }

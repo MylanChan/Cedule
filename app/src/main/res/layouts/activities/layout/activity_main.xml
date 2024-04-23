@@ -16,15 +16,35 @@
         android:text="Welcome to Cedule!"
         android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/tv_info"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="You used our service 23 days and completed 32 tasks"
-        android:textColor="#4A4A4A" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:drawableLeft="@drawable/ic_celebration"
+            android:drawablePadding="12dp"
+            android:text="You used our service 23 days and completed 32 tasks"
+            android:textColor="#4A4A4A" />
+
+        <TextView
+            android:id="@+id/tv_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:drawableLeft="@drawable/ic_done"
+            android:drawablePadding="12dp"
+            android:text="You used our service 23 days and completed 32 tasks"
+            android:textColor="#4A4A4A" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
