@@ -113,10 +113,12 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
                 Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);
 
-                TextView tvCategory = view.findViewById(R.id.tv_category);
-                tvCategory.setText(category.name);
-                tvCategory.setBackgroundTintList(ColorStateList.valueOf(category.color));
-                tvCategory.setVisibility(View.VISIBLE);
+                activity.runOnUiThread(() -> {
+                    TextView tvCategory = view.findViewById(R.id.tv_category);
+                    tvCategory.setText(category.name);
+                    tvCategory.setBackgroundTintList(ColorStateList.valueOf(category.color));
+                    tvCategory.setVisibility(View.VISIBLE);
+                });
             }).start();
         }
     }

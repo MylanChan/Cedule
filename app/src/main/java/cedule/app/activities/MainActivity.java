@@ -50,17 +50,19 @@ public class MainActivity extends AppCompatActivity {
                 .fallbackToDestructiveMigration()
                 .build();
 
-        findViewById(R.id.btn_about).setOnClickListener(v -> {
+        findViewById(R.id.ll_about).setOnClickListener(v -> {
             Intent intent = new Intent(this, DocumentActivity.class);
             intent.putExtra("type", DocumentActivity.TYPE_ABOUT);
             startActivity(intent);
         });
 
-        findViewById(R.id.btn_story).setOnClickListener(v -> {
+        findViewById(R.id.ll_story).setOnClickListener(v -> {
             Intent intent = new Intent(this, DocumentActivity.class);
             intent.putExtra("type", DocumentActivity.TYPE_STORY);
             startActivity(intent);
         });
+
+        getWindow().setNavigationBarColor(0x75E8E8E8);
 
         findViewById(R.id.btn_task).setOnClickListener(v -> {
             startActivity(new Intent(this, TaskActivity.class));

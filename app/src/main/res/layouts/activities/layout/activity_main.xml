@@ -30,7 +30,7 @@
             android:layout_marginEnd="32dp"
             android:drawableLeft="@drawable/ic_celebration"
             android:drawablePadding="12dp"
-            android:text="You used our service 23 days and completed 32 tasks"
+            android:text="You used our service 23 days"
             android:textColor="#4A4A4A" />
 
         <TextView
@@ -43,7 +43,8 @@
             android:drawableLeft="@drawable/ic_done"
             android:drawablePadding="12dp"
             android:text="You used our service 23 days and completed 32 tasks"
-            android:textColor="#4A4A4A" />
+            android:textColor="#4A4A4A"
+            tools:text="2 tasks completed" />
     </LinearLayout>
 
     <LinearLayout
@@ -52,6 +53,8 @@
         android:layout_marginTop="24dp"
         android:background="@drawable/view_radius_top"
         android:backgroundTint="#75E8E8E8"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -86,7 +89,8 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:minWidth="0dp"
                 android:text="Task"
-                android:textColor="#BEBEBE" />
+                android:textColor="#BEBEBE"
+                app:backgroundTint="#3F51B5" />
 
             <Button
                 android:id="@+id/btn_focus"
@@ -98,21 +102,8 @@
                 android:drawableTint="#fff"
                 android:foreground="?attr/selectableItemBackground"
                 android:text="Focus"
-                android:textColor="#BEBEBE" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_divider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="48dp"
-            android:background="@drawable/view_rounded"
-            android:orientation="horizontal">
+                android:textColor="#BEBEBE"
+                app:backgroundTint="#8535CB" />
 
         </LinearLayout>
 
@@ -121,32 +112,106 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
+            android:layout_marginTop="60dp"
             android:layout_marginBottom="36dp"
-            android:text="More info"
+            android:text="Explore more"
             android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/btn_about"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/view_rounded"
-            android:drawableLeft="@drawable/ic_group"
-            android:drawableTint="#C9C9C9"
-            android:foreground="?attr/selectableItemBackground"
-            android:text="About us"
-            android:textColor="#C9C9C9" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btn_story"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/view_rounded"
-            android:drawableLeft="@drawable/ic_board"
-            android:drawableTint="#C9C9C9"
-            android:foreground="?attr/selectableItemBackground"
-            android:text="Story behind"
-            android:textColor="#C9C9C9" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp">
+
+                <LinearLayout
+                    android:id="@+id/ll_about"
+                    android:layout_width="250dp"
+                    android:layout_height="106dp"
+                    android:background="@drawable/view_rounded"
+                    android:backgroundTint="#6DBFA6"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:srcCompat="@drawable/ic_group" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="About Us" />
+
+                        <TextView
+                            android:id="@+id/textView7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:text="Cedule is an individual project. This section will introduce the developer. "
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_story"
+                    android:layout_width="250dp"
+                    android:layout_height="105dp"
+                    android:layout_marginStart="24dp"
+                    android:background="@drawable/view_rounded"
+                    android:backgroundTint="#00BCD4"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:srcCompat="@drawable/ic_board" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Story Behind" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:text="What are the objectives of Cedule? Who is the target user?"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </HorizontalScrollView>
 
     </LinearLayout>
 </LinearLayout>
