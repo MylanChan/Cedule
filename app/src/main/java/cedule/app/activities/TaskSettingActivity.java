@@ -1,17 +1,22 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -134,6 +139,24 @@ public class TaskSettingActivity extends AppCompatActivity {
         TextView tvNotify = findViewById(R.id.tv_notify_desc);
         if (isNotify)  tvNotify.setVisibility(View.VISIBLE);
         else tvNotify.setVisibility(View.GONE);
+
+        // only ask permission when enabling notify
+        // ignore when disabling notify
+        if (!isNotify) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Require Permission")
+                    .setMessage("Cannot notify you properly")
+                    .setNegativeButton("NOT NOW", null)
+                    .setPositiveButton("GRANT", (dialog, which) -> {
+                        // open notification setting page
+                        Intent settingsIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                        startActivity(settingsIntent);
+                    })
+                    .show();
+        }
     }
 
     @Override
