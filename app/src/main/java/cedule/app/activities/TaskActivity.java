@@ -84,7 +84,7 @@ public class TaskActivity extends AppCompatActivity {
         new Thread(() -> {
             RecyclerView rvTasks = findViewById(R.id.rv_tasks);
             Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
-
+            System.out.println(name);
             if (category != null) {
                 List<Task> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
                 runOnUiThread(() -> {
@@ -180,24 +180,27 @@ public class TaskActivity extends AppCompatActivity {
 
         getSupportFragmentManager().setFragmentResultListener("filterTask", this, (requestKey, result) -> {
             new Thread(() -> {
-                String category = result.getString("category");
+                String categoryName = result.getString("category");
 
-                Long startDate = result.getLong("startDate", -1);
-                Long endDate = result.getLong("endDate", -1);
+                long startDate = result.getLong("startDate", -1);
+                long endDate = result.getLong("endDate", -1);
 
                 List<Task> tasks;
 
-                if (category != null) {
-                    MainActivity.getDatabase().categoryDAO().add(category, null);
-                    int catId = MainActivity.getDatabase().categoryDAO().getByName(category).id;
+                if (categoryName != null) {
+                    Category category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
+                    if (category == null) {
+                        MainActivity.getDatabase().categoryDAO().add(categoryName, null);
+                        category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
+                    }
 
                     if (startDate == -1 && endDate == -1) {
-                        tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(
-                            catId, startDate, endDate
-                        );
+                        tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
                     }
                     else {
-                        tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(catId);
+                        tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(
+                                category.id, startDate, endDate
+                        );
                     }
                 }
                 else {
