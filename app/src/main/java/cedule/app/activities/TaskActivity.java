@@ -8,6 +8,8 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +23,7 @@ import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.dialogs.FilterDialog;
+import cedule.app.utils.LayoutUtils;
 
 public class TaskActivity extends AppCompatActivity {
     private void handleOnClickSort(View v) {
@@ -177,6 +180,7 @@ public class TaskActivity extends AppCompatActivity {
         findViewById(R.id.ib_trash).setOnClickListener(v -> handleOnClickDiscard());
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
+        LayoutUtils.setBarColor(getWindow());
 
         getSupportFragmentManager().setFragmentResultListener("filterTask", this, (requestKey, result) -> {
             new Thread(() -> {

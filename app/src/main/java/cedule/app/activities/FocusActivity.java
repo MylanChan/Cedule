@@ -1,6 +1,8 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.app.AlertDialog;
 import android.app.NotificationManager;
@@ -18,6 +20,7 @@ import java.util.Calendar;
 
 import cedule.app.R;
 import cedule.app.services.TaskNotifyService;
+import cedule.app.utils.LayoutUtils;
 import cedule.app.utils.TimeUtils;
 
 public class FocusActivity extends AppCompatActivity {
@@ -110,5 +113,6 @@ public class FocusActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(0x84F5F2F2);
         getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
+        LayoutUtils.setBarColor(getWindow());
     }
 }

@@ -1,6 +1,8 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import cedule.app.R;
+import cedule.app.utils.LayoutUtils;
 
 public class DocumentActivity extends AppCompatActivity {
     public final static int TYPE_STORY = 0;
@@ -43,5 +46,8 @@ public class DocumentActivity extends AppCompatActivity {
         loadHtmlByType(type);
 
         findViewById(R.id.ib_exit).setOnClickListener(v -> finish());
+
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
+        LayoutUtils.setBarColor(getWindow());
     }
 }

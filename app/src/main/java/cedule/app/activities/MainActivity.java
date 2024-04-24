@@ -1,6 +1,8 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.room.Room;
 
 import android.content.Intent;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import cedule.app.R;
 import cedule.app.data.Database;
+import cedule.app.utils.LayoutUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static Database database;
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         getWindow().setNavigationBarColor(0x75E8E8E8);
+        LayoutUtils.setBarColor(getWindow());
 
         findViewById(R.id.btn_task).setOnClickListener(v -> {
             startActivity(new Intent(this, TaskActivity.class));
