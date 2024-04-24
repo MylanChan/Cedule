@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         return database;
     }
 
+    boolean isOnBackToastShowed = false;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -31,6 +36,21 @@ public class MainActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.tv_task)).setText(taskCompleted + " tasks completed");
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isOnBackToastShowed) {
+            super.onBackPressed();
+            return;
+        }
+
+        isOnBackToastShowed = true;
+        Toast.makeText(this, "Please again to exit app", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(()-> {
+            isOnBackToastShowed = false;
+        }, 2000);
+
+    }
 
     @Override
     protected void onDestroy() {
