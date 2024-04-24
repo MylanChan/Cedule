@@ -8,4 +8,9 @@
     </style>
 
     <style name="Theme.Cedule" parent="Base.Theme.Cedule" />
+
+    <style name="SelectableItemBackground">
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <item name="android:radius">90dp</item>
+    </style>
 </resources>

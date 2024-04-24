@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
@@ -71,17 +70,6 @@ public class TaskActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void setTabWidth(int pos, float width) {
-        TabLayout tlTasks = findViewById(R.id.tl_tasks);
-        LinearLayout llTabItem0 = ((LinearLayout) ((LinearLayout) tlTasks.getChildAt(0)).getChildAt(pos));
-
-        LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) llTabItem0.getLayoutParams();
-
-        layoutParams.weight = width;
-        llTabItem0.setLayoutParams(layoutParams);
-    }
-
     private void showFocusPage() {
         Intent intent = new Intent(this, FocusActivity.class);
         startActivity(intent);
@@ -110,7 +98,7 @@ public class TaskActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void initialOnTabSelectedListener() {
+    private void initOnTabSelectedListener() {
         TabLayout tlTasks = findViewById(R.id.tl_tasks);
 
         tlTasks.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -120,10 +108,6 @@ public class TaskActivity extends AppCompatActivity {
 
                 switch (tab.getPosition()) {
                     case 0: {
-                        showFocusPage();
-                        return;
-                    }
-                    case 1: {
                         new Thread(() -> {
                             List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
                             runOnUiThread(() -> {
@@ -181,13 +165,10 @@ public class TaskActivity extends AppCompatActivity {
             startActivityForResult(intent, 2);
         });
 
-        TabLayout tlTasks = findViewById(R.id.tl_tasks);
-        tlTasks.getTabAt(0).setIcon(R.drawable.ic_focus);
-        tlTasks.getTabAt(1).select();
 
-        setTabWidth(0, 0.5f);
-        initialOnTabSelectedListener();
+        initOnTabSelectedListener();
 
+        findViewById(R.id.ib_focus).setOnClickListener(v -> showFocusPage());
         findViewById(R.id.ib_filter).setOnClickListener(v -> {
             new FilterDialog().show(getSupportFragmentManager(), null);
         });

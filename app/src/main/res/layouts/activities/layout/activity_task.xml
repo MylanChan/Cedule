@@ -5,35 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageButton
+        android:id="@+id/ib_focus"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_focus" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="-1dp"
+        android:background="#E6DFEB"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/ib_focus"
+        app:layout_constraintStart_toStartOf="@+id/ib_focus"
+        app:layout_constraintTop_toBottomOf="@+id/ib_focus"></LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tl_tasks"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:theme="@style/SelectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toEndOf="@+id/ib_focus"
+        app:layout_constraintTop_toTopOf="@+id/ib_focus"
+        app:tabRippleColor="@null">
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_focus"
-            android:backgroundTint="#000000" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:text="Overall" />
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Work" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tabItem"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Study" />
     </com.google.android.material.tabs.TabLayout>
@@ -96,7 +109,6 @@
     </LinearLayout>
 
     <ScrollView
-        android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -127,11 +139,11 @@
         android:layout_width="wrap_content"
         android:layout_height="150dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tl_tasks"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bg_task_completed"
-        tools:visibility="invisible" />
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

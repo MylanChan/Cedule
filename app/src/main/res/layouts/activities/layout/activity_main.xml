@@ -129,10 +129,12 @@
                 <LinearLayout
                     android:id="@+id/ll_about"
                     android:layout_width="250dp"
-                    android:layout_height="106dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/view_rounded"
                     android:backgroundTint="#6DBFA6"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
+                    android:minHeight="106dp"
                     android:orientation="horizontal"
                     android:paddingStart="24dp">
 
@@ -144,7 +146,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
@@ -163,7 +165,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:ellipsize="end"
-                            android:text="Cedule is an individual project. This section will introduce the developer. "
+                            android:text="Introduction of developer. "
                             android:textSize="11sp" />
                     </LinearLayout>
 
@@ -172,11 +174,13 @@
                 <LinearLayout
                     android:id="@+id/ll_story"
                     android:layout_width="250dp"
-                    android:layout_height="105dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:background="@drawable/view_rounded"
                     android:backgroundTint="#00BCD4"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
+                    android:minHeight="106dp"
                     android:orientation="horizontal"
                     android:paddingStart="24dp">
 
@@ -187,7 +191,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
@@ -204,7 +208,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:ellipsize="end"
-                            android:text="What are the objectives of Cedule? Who is the target user?"
+                            android:text="What are the objectives of Cedule?"
                             android:textSize="11sp" />
                     </LinearLayout>
 
