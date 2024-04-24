@@ -116,7 +116,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             view.findViewById(R.id.ll_msg).setVisibility(View.GONE);
         }
 
-        if (task.isNotify != null && task.isNotify == 1) {
+        if (task.isNotify != null && task.isNotify == 1
+                && System.currentTimeMillis() < task.startDate + (task.startTime == null ? 0 : task.startTime)) {
             view.findViewById(R.id.iv_notify).setVisibility(View.VISIBLE);
         }
 

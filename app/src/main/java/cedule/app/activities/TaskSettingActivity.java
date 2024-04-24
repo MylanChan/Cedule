@@ -2,6 +2,8 @@ package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -41,6 +43,15 @@ public class TaskSettingActivity extends AppCompatActivity {
     private boolean isNotify = false;
     private Long startDate = null;
     private Integer startTime = null;
+
+    private void postAlarm(long timestamp) {
+        Intent intent = new Intent(getApplicationContext(), TaskNotifyService.class);
+        PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, timestamp, pi);
+    }
 
     private int getCategoryId(String name) {
         int color = findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor();
@@ -95,13 +106,30 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                     }).start();
 
-                    if (isNotify && startDate != null && startTime != null) {
-                        Intent intent = new Intent(getApplicationContext(), TaskNotifyService.class);
-                        PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent,
-                                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    if (isNotify) {
+                        System.out.println(startDate != null && System.currentTimeMillis() < startDate+(startTime == null ? 0 : startTime));
+                        if (startDate != null && System.currentTimeMillis() < startDate+(startTime == null ? 0 : startTime)) {
+                            postAlarm(startDate+(startTime == null ? 0 : startTime));
 
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, startDate + startTime, pi);
+                            Toast.makeText(this, "Notify you at " + TimeUtils.toDateString(startDate) + " " + TimeUtils.toTimeNotation(startTime/1000), Toast.LENGTH_SHORT).show();
+                        }
+                        else if (startDate == null){
+                            Calendar calendar = Calendar.getInstance();
+                            TimeUtils.setMidNight(calendar);
+
+                            calendar.add(Calendar.MILLISECOND, startTime);
+                            if (System.currentTimeMillis() < calendar.getTimeInMillis()) {
+                                calendar.add(Calendar.DATE, +1);
+                            }
+
+                            postAlarm(calendar.getTimeInMillis());
+                            Toast.makeText(this, "Notify you at " +
+                                    TimeUtils.toDateString(calendar.getTimeInMillis()) + " " +
+                                    TimeUtils.toTimeNotation(
+                                            (int) TimeUnit.MINUTES.toSeconds(calendar.get(Calendar.HOUR_OF_DAY) * 60
+                                                    + calendar.get(Calendar.MINUTE))
+                                    ), Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     dialog.dismiss();
@@ -145,7 +173,9 @@ public class TaskSettingActivity extends AppCompatActivity {
         // only ask permission when enabling notify
         // ignore when disabling notify
         if (!isNotify) return;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
             new AlertDialog.Builder(this)
                     .setTitle("Require Permission")
                     .setMessage("Cannot notify you properly")
@@ -171,41 +201,41 @@ public class TaskSettingActivity extends AppCompatActivity {
         findViewById(R.id.ib_exit).setOnClickListener(v -> exitPage());
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
-            Calendar mcurrentTime = Calendar.getInstance();
-            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-            int minute = mcurrentTime.get(Calendar.MINUTE);
-            TimePickerDialog mTimePicker;
-            mTimePicker = new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
-                startTime = (int) (TimeUnit.HOURS.toMillis(selectedHour) + TimeUnit.MINUTES.toMillis(selectedMinute));
-                ((TextView) findViewById(R.id.tv_time_desc)).setText(TimeUtils.toTimeString(startTime));
+            new TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
+                    startTime = (int) (TimeUnit.MINUTES.toMillis(selectedHour*60L+selectedMinute));
 
-                setPropertyEnableStyle(true, findViewById(R.id.iv_time), findViewById(R.id.tv_time_title), R.drawable.ic_time_fill);
-            }, hour, minute, true);
-            mTimePicker.show();
+                    TextView tvTimeDesc = findViewById(R.id.tv_time_desc);
+                    tvTimeDesc.setText(TimeUtils.toTimeString(startTime));
+
+                    setPropertyEnableStyle(true, findViewById(R.id.iv_time),
+                            findViewById(R.id.tv_time_title), R.drawable.ic_time_fill);
+                },
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                Calendar.getInstance().get(Calendar.MINUTE), true)
+                .show();
         });
 
         findViewById(R.id.ll_date).setOnClickListener(v -> {
-                new DatePickerDialog(
-                        this,
-                        (view, year, month, dayOfMonth) -> {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(Calendar.YEAR, year);
-                            calendar.set(Calendar.MONTH, month);
-                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                            TimeUtils.setMidNight(calendar);
+            new DatePickerDialog(
+                    this,
+                    (view, year, month, dayOfMonth) -> {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        TimeUtils.setMidNight(calendar);
 
-                            startDate = calendar.getTimeInMillis();
-                            ((TextView) findViewById(R.id.tv_endDate))
-                                    .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
+                        startDate = calendar.getTimeInMillis();
+                        ((TextView) findViewById(R.id.tv_endDate))
+                                .setText(TimeUtils.toDateString(calendar.getTimeInMillis()));
 
-                            setPropertyEnableStyle(true, findViewById(R.id.iv_date),
-                                    findViewById(R.id.tv_startDate), R.drawable.ic_calendar_fill);
-                        },
-                        Calendar.getInstance().get(Calendar.YEAR),
-                        Calendar.getInstance().get(Calendar.MONTH),
-                        Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
-                        .show();
-
+                        setPropertyEnableStyle(true, findViewById(R.id.iv_date),
+                                findViewById(R.id.tv_startDate), R.drawable.ic_calendar_fill);
+                    },
+                    Calendar.getInstance().get(Calendar.YEAR),
+                    Calendar.getInstance().get(Calendar.MONTH),
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                    .show();
         });
 
         findViewById(R.id.ll_notify).setOnClickListener(v -> handleOnClickNotify(!isNotify));
@@ -308,8 +338,11 @@ public class TaskSettingActivity extends AppCompatActivity {
             }
         });
 
-        getSupportFragmentManager().setFragmentResultListener("pickColor", this, (requestKey, result) -> {
-            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(result.getInt("color")));
+        getSupportFragmentManager().setFragmentResultListener("pickColor", this, (key, result) -> {
+            if (result.containsKey("color")) {
+                int color = result.getInt("color", Color.RED);
+                findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(color));
+            }
         });
     }
 }
