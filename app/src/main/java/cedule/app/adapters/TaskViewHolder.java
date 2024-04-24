@@ -11,6 +11,8 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.concurrent.TimeUnit;
@@ -98,19 +100,28 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
                 int hour = (int) TimeUnit.MILLISECONDS.toHours(task.startTime);
                 int min = (int) (TimeUnit.MILLISECONDS.toMinutes(task.startTime) - hour * 60);
 
-                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " " + TimeUtils.toTimeString((hour*60+min)*60*1000));
-                return;
+                tvMsg.setText(TimeUtils.toDateString(task.startDate) + " - " + TimeUtils.toTimeString((hour*60+min)*60*1000));
             }
-            tvMsg.setText(TimeUtils.toDateString(task.startDate));
+            else {
+                tvMsg.setText(TimeUtils.toDateString(task.startDate));
+            }
+        }
+        else if (task.startTime != null) {
+            int hour = (int) TimeUnit.MILLISECONDS.toHours(task.startTime);
+            int min = (int) (TimeUnit.MILLISECONDS.toMinutes(task.startTime) - hour * 60);
+
+            tvMsg.setText(TimeUtils.toTimeString((hour*60+min)*60*1000));
         }
         else {
-            tvMsg.setVisibility(View.GONE);
+            view.findViewById(R.id.ll_msg).setVisibility(View.GONE);
+        }
+
+        if (task.isNotify != null && task.isNotify == 1) {
+            view.findViewById(R.id.iv_notify).setVisibility(View.VISIBLE);
         }
 
         if (task.category != null) {
             new Thread(() -> {
-                System.out.println(task.id);
-
                 Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);
 
                 activity.runOnUiThread(() -> {

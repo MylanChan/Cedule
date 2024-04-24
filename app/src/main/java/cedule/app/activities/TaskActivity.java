@@ -118,7 +118,7 @@ public class TaskActivity extends AppCompatActivity {
                     }
                     default: {
                         CharSequence tabText = tab.getText();
-                        if (tabText != null) getTasksByCategory(tabText.toString());
+                        if (tabText != null) getTasksByCategory(tabText.toString().toLowerCase());
                     }
                 }
             }
@@ -190,7 +190,7 @@ public class TaskActivity extends AppCompatActivity {
                 if (categoryName != null) {
                     Category category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
                     if (category == null) {
-                        MainActivity.getDatabase().categoryDAO().add(categoryName, null);
+                        MainActivity.getDatabase().categoryDAO().add(categoryName.toLowerCase(), null);
                         category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
                     }
 

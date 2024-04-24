@@ -1,6 +1,8 @@
 package cedule.app.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
@@ -40,7 +42,8 @@ public class TimeUtils {
         Calendar date = Calendar.getInstance();
         date.setTimeInMillis(ms);
 
-        return date.get(Calendar.DAY_OF_MONTH) + "/" + (date.get(Calendar.MONTH)+1) + "/" + date.get(Calendar.YEAR);
+
+        return date.get(Calendar.DAY_OF_MONTH) + " " + new SimpleDateFormat("MMM", Locale.ENGLISH).format(ms) + " " + date.get(Calendar.YEAR);
 
     }
 }

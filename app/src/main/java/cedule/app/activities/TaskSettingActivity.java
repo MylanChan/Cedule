@@ -43,14 +43,10 @@ public class TaskSettingActivity extends AppCompatActivity {
     private Integer startTime = null;
 
     private int getCategoryId(String name) {
-        Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
-        if (category == null) {
-            MainActivity.getDatabase().categoryDAO().add(name, findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor());
-        }
-        int id = MainActivity.getDatabase().categoryDAO().getByName(name).id;
-        MainActivity.getDatabase().categoryDAO().updateColor(id, findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor());
+        int color = findViewById(R.id.ll_color).getBackgroundTintList().getDefaultColor();
+        MainActivity.getDatabase().categoryDAO().add(name.toLowerCase(), color);
 
-        return id;
+        return MainActivity.getDatabase().categoryDAO().getByName(name).id;
     }
 
     private void exitPage() {
@@ -175,12 +171,6 @@ public class TaskSettingActivity extends AppCompatActivity {
         findViewById(R.id.ib_exit).setOnClickListener(v -> exitPage());
 
         findViewById(R.id.ll_time).setOnClickListener(v -> {
-            if (startDate == null) {
-                Toast.makeText(this, "You need to configure the date first", Toast.LENGTH_SHORT)
-                        .show();
-                return;
-            }
-
             Calendar mcurrentTime = Calendar.getInstance();
             int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
             int minute = mcurrentTime.get(Calendar.MINUTE);
@@ -317,6 +307,7 @@ public class TaskSettingActivity extends AppCompatActivity {
                 }
             }
         });
+
         getSupportFragmentManager().setFragmentResultListener("pickColor", this, (requestKey, result) -> {
             findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(result.getInt("color")));
         });
