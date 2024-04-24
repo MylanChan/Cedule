@@ -12,15 +12,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 
 import cedule.app.R;
 import cedule.app.data.Database;
 import cedule.app.utils.LayoutUtils;
+import cedule.app.utils.TimeUtils;
 
 public class MainActivity extends AppCompatActivity {
     private static Database database;
@@ -31,16 +34,49 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isOnBackToastShowed = false;
 
+    private void loadData() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        long startDate = prefs.getLong("StartDate", -1);
+        long taskCompleted = prefs.getLong("TaskCompleted", 0);
+
+        if (startDate == -1) {
+            SharedPreferences.Editor editor = prefs.edit();
+
+            Calendar calendar = Calendar.getInstance();
+            TimeUtils.setMidNight(calendar);
+
+            editor.putLong("StartDate", calendar.getTimeInMillis());
+
+            TextView tvDay = findViewById(R.id.tv_day);
+            tvDay.setText("Today is your first day to use Cedule!");
+
+            editor.apply();
+        }
+        else {
+            long dayUse = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - startDate);
+
+            TextView tvDay = findViewById(R.id.tv_day);
+            tvDay.setText("You used our service " + dayUse + " days");
+
+            TextView tvTask = findViewById(R.id.tv_task);
+            tvTask.setText(taskCompleted + " tasks completed");
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        long taskCompleted = sharedPref.getLong("TaskCompleted", 0);
-        ((TextView) findViewById(R.id.tv_task)).setText(taskCompleted + " tasks completed");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        long taskCompleted = prefs.getLong("TaskCompleted", 0);
+
+        TextView tvTask = findViewById(R.id.tv_task);
+        tvTask.setText(taskCompleted + " tasks completed");
     }
 
     @Override
     public void onBackPressed() {
+        // user need to click back button twice to exit app
         if (isOnBackToastShowed) {
             super.onBackPressed();
             return;
@@ -68,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getWindow().setNavigationBarColor(0x75E8E8E8);
+        LayoutUtils.setBarColor(getWindow());
+
         database = Room.databaseBuilder(this, Database.class, "app.db")
                 .createFromAsset("app.db")
                 .fallbackToDestructiveMigration()
@@ -85,37 +124,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        getWindow().setNavigationBarColor(0x75E8E8E8);
-        LayoutUtils.setBarColor(getWindow());
+        Button btnTask = findViewById(R.id.btn_task);
+        btnTask.setOnClickListener(v -> startActivity(new Intent(this, TaskActivity.class)));
 
-        findViewById(R.id.btn_task).setOnClickListener(v -> {
-            startActivity(new Intent(this, TaskActivity.class));
-        });
+        Button btnFocus = findViewById(R.id.btn_focus);
+        btnFocus.setOnClickListener(v -> startActivity(new Intent(this, FocusActivity.class)));
 
-        findViewById(R.id.btn_focus).setOnClickListener(v -> {
-            startActivity(new Intent(this, FocusActivity.class));
-        });
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        long startDate = sharedPref.getLong("StartDate", -1);
-        long taskCompleted = sharedPref.getLong("TaskCompleted", 0);
-
-        if (startDate == -1) {
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putLong("StartDate", System.currentTimeMillis());
-
-            ((TextView) findViewById(R.id.tv_day)).setText(
-                    "You used our service 0 days and completed " + taskCompleted + " tasks"
-            );
-
-            editor.commit();
-        }
-        else {
-            long dayUse = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - startDate);
-            ((TextView) findViewById(R.id.tv_day)).setText("You used our service " + dayUse + " days ");
-
-            ((TextView) findViewById(R.id.tv_task)).setText(taskCompleted + " tasks completed");
-        }
-
+        loadData();
     }
 }
