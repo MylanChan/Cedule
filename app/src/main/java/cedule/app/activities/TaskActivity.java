@@ -213,6 +213,7 @@ public class TaskActivity extends AppCompatActivity {
                     tasks = db.tasksDAO().getTaskByFilter(category.id, startDate, endDate);
                 }
 
+                if (tasks == null) return;
                 List<Task> finalTasks = tasks;
                 runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));
             }).start();

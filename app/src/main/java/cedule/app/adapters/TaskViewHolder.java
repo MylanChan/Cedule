@@ -105,6 +105,11 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             else {
                 tvMsg.setText(TimeUtils.toDateString(task.startDate));
             }
+
+            if (task.isNotify != null && task.isNotify == 1
+                    && System.currentTimeMillis() < task.startDate + (task.startTime == null ? 0 : task.startTime)) {
+                view.findViewById(R.id.iv_notify).setVisibility(View.VISIBLE);
+            }
         }
         else if (task.startTime != null) {
             int hour = (int) TimeUnit.MILLISECONDS.toHours(task.startTime);
@@ -114,11 +119,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         }
         else {
             view.findViewById(R.id.ll_msg).setVisibility(View.GONE);
-        }
-
-        if (task.isNotify != null && task.isNotify == 1
-                && System.currentTimeMillis() < task.startDate + (task.startTime == null ? 0 : task.startTime)) {
-            view.findViewById(R.id.iv_notify).setVisibility(View.VISIBLE);
         }
 
         if (task.category != null) {

@@ -69,6 +69,17 @@ public class TaskSettingActivity extends AppCompatActivity {
                     setResult(RESULT_OK);
                     finish();
 
+                    if (startDate == null && startTime != null) {
+                        Calendar calendar = Calendar.getInstance();
+                        TimeUtils.setMidNight(calendar);
+
+                        if (System.currentTimeMillis() < calendar.getTimeInMillis()) {
+                            calendar.add(Calendar.DATE, +1);
+                        }
+
+                        startDate = calendar.getTimeInMillis();
+                    }
+
                     new Thread(() -> {
                         String title = ((EditText) findViewById(R.id.tv_task_name)).getText().toString();
                         if (title.equals("")) title = null;
@@ -78,7 +89,7 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                         // empty text field is empty string rather than null
                         if (!categoryName.equals("")) {
-                            categoryId = getCategoryId(categoryName);
+                            categoryId = getCategoryId(categoryName.toLowerCase());
                         }
 
                         String note = ((EditText) findViewById(R.id.tv_note)).getText().toString();
@@ -108,28 +119,10 @@ public class TaskSettingActivity extends AppCompatActivity {
                     }).start();
 
                     if (isNotify) {
-                        System.out.println(startDate != null && System.currentTimeMillis() < startDate+(startTime == null ? 0 : startTime));
-                        if (startDate != null && System.currentTimeMillis() < startDate+(startTime == null ? 0 : startTime)) {
+                        if (System.currentTimeMillis() < startDate+(startTime == null ? 0 : startTime)) {
                             postAlarm(startDate+(startTime == null ? 0 : startTime));
 
                             Toast.makeText(this, "Notify you at " + TimeUtils.toDateString(startDate) + " " + TimeUtils.toTimeNotation(startTime/1000), Toast.LENGTH_SHORT).show();
-                        }
-                        else if (startDate == null){
-                            Calendar calendar = Calendar.getInstance();
-                            TimeUtils.setMidNight(calendar);
-
-                            calendar.add(Calendar.MILLISECOND, startTime);
-                            if (System.currentTimeMillis() < calendar.getTimeInMillis()) {
-                                calendar.add(Calendar.DATE, +1);
-                            }
-
-                            postAlarm(calendar.getTimeInMillis());
-                            Toast.makeText(this, "Notify you at " +
-                                    TimeUtils.toDateString(calendar.getTimeInMillis()) + " " +
-                                    TimeUtils.toTimeNotation(
-                                            (int) TimeUnit.MINUTES.toSeconds(calendar.get(Calendar.HOUR_OF_DAY) * 60
-                                                    + calendar.get(Calendar.MINUTE))
-                                    ), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -262,22 +255,20 @@ public class TaskSettingActivity extends AppCompatActivity {
 
                         ((TextView) findViewById(R.id.tv_endDate))
                             .setText(TimeUtils.toDateString(task.startDate));
+                    }
+                    if (task.startTime != null) {
+                        startTime = task.startTime;
 
-                        if (task.startTime != null) {
-                            startTime = task.startTime;
+                        setPropertyEnableStyle(true, findViewById(R.id.iv_time),
+                                findViewById(R.id.tv_time_title), R.drawable.ic_time);
 
-                            setPropertyEnableStyle(true, findViewById(R.id.iv_time),
-                                    findViewById(R.id.tv_time_title), R.drawable.ic_time);
-
-                            ((TextView) findViewById(R.id.tv_time_desc))
+                        ((TextView) findViewById(R.id.tv_time_desc))
                                 .setText(TimeUtils.toTimeString(startTime));
-                        }
-
-                        if (task.isNotify != null) {
-                            handleOnClickNotify(task.isNotify == 1);
-                        }
                     }
 
+                    if (task.isNotify != null) {
+                        handleOnClickNotify(task.isNotify == 1);
+                    }
                     if (task.note != null) ((EditText) findViewById(R.id.tv_note)).setText(task.note);
                 });
 
