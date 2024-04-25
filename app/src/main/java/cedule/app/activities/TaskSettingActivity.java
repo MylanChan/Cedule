@@ -36,6 +36,7 @@ import cedule.app.R;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.dialogs.ColorDialog;
+import cedule.app.services.TaskNotifyReceiver;
 import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.LayoutUtils;
 import cedule.app.utils.TimeUtils;
@@ -97,12 +98,12 @@ public class TaskSettingActivity extends AppCompatActivity {
     }
 
     private void postAlarm(long timestamp) {
-        Intent intent = new Intent(getApplicationContext(), TaskNotifyService.class);
-        PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, intent,
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(getApplicationContext(), TaskNotifyReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0, intent,
+                PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, timestamp, pi);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timestamp, pi);
     }
 
     private int getCategoryId(String name) {
