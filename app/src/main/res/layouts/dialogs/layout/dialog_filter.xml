@@ -34,7 +34,7 @@
             app:srcCompat="@drawable/ic_category" />
 
         <AutoCompleteTextView
-            android:id="@+id/tv_category_desc"
+            android:id="@+id/atv_category"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"

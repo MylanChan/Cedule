@@ -24,17 +24,15 @@ public class TaskNotifyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (player != null) {
-            player.release();
-        }
+        if (player != null) player.release();
     }
 
-    @SuppressLint("ForegroundServiceType")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
             stopSelf();
             return START_STICKY;
         }
@@ -59,7 +57,8 @@ public class TaskNotifyService extends Service {
                     .setSmallIcon(R.drawable.ic_task)
                     .setColor(Color.GRAY)
                     .setContentTitle("Cedule")
-                    .setContentText("Time to work");
+                    .setContentText("Time to work")
+                    .setOngoing(true);
 
         if (player != null) player.release();
         player = new AlarmPlayer(getApplicationContext());

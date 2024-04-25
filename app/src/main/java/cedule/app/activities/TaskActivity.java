@@ -20,6 +20,8 @@ import java.util.List;
 
 import cedule.app.R;
 import cedule.app.adapters.TaskAdapter;
+import cedule.app.data.Database;
+import cedule.app.data.dao.TaskDAO;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.dialogs.FilterDialog;
@@ -87,7 +89,7 @@ public class TaskActivity extends AppCompatActivity {
         new Thread(() -> {
             RecyclerView rvTasks = findViewById(R.id.rv_tasks);
             Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
-            System.out.println(name);
+
             if (category != null) {
                 List<Task> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
                 runOnUiThread(() -> {
@@ -111,12 +113,7 @@ public class TaskActivity extends AppCompatActivity {
 
                 switch (tab.getPosition()) {
                     case 0: {
-                        new Thread(() -> {
-                            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
-                            runOnUiThread(() -> {
-                                rvTasks.setAdapter(new TaskAdapter(TaskActivity.this, tasks));
-                            });
-                        }).start();
+                        loadAllTasks();
                         return;
                     }
                     default: {
@@ -132,6 +129,17 @@ public class TaskActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
+    }
+
+    private void loadAllTasks() {
+        RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+        rvTasks.setLayoutManager(new LinearLayoutManager(this));
+
+        new Thread(() -> {
+            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+
+            runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
+        }).start();
     }
 
     @Override
@@ -156,12 +164,7 @@ public class TaskActivity extends AppCompatActivity {
 
         RecyclerView rvTasks = findViewById(R.id.rv_tasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
-
-        new Thread(() -> {
-            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
-
-            runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
-        }).start();
+        loadAllTasks();
 
         findViewById(R.id.btn_add).setOnClickListener(v -> {
             Intent intent = new Intent(this, TaskSettingActivity.class);
@@ -183,34 +186,32 @@ public class TaskActivity extends AppCompatActivity {
         LayoutUtils.setBarColor(getWindow());
 
         getSupportFragmentManager().setFragmentResultListener("filterTask", this, (requestKey, result) -> {
+            TabLayout tlTasks = findViewById(R.id.tl_tasks);
+            tlTasks.getTabAt(0).select();
+
             new Thread(() -> {
+                Database db = MainActivity.getDatabase();
+
                 String categoryName = result.getString("category");
 
                 long startDate = result.getLong("startDate", -1);
                 long endDate = result.getLong("endDate", -1);
 
-                List<Task> tasks;
+                List<Task> tasks = null;
 
-                if (categoryName != null) {
-                    Category category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
-                    if (category == null) {
-                        MainActivity.getDatabase().categoryDAO().add(categoryName.toLowerCase(), null);
-                        category = MainActivity.getDatabase().categoryDAO().getByName(categoryName);
-                    }
+                Category category = db.categoryDAO().getByName(categoryName);
 
-                    if (startDate == -1 && endDate == -1) {
-                        tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
+                if (categoryName == null || category == null) {
+                    if (startDate != -1 && endDate != -1) {
+                        tasks = db.tasksDAO().getTaskByFilter(startDate, endDate);
                     }
-                    else {
-                        tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(
-                                category.id, startDate, endDate
-                        );
-                    }
+                }
+                else if (startDate == -1 || endDate == -1) {
+                    tasks = db.tasksDAO().getTasksByCategory(category.id);
                 }
                 else {
-                    tasks = MainActivity.getDatabase().tasksDAO().getTaskByFilter(startDate, endDate);
+                    tasks = db.tasksDAO().getTaskByFilter(category.id, startDate, endDate);
                 }
-
 
                 List<Task> finalTasks = tasks;
                 runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));

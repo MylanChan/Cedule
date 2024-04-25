@@ -8,10 +8,7 @@ import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 
 @androidx.room.Database(
-        entities = {
-                Category.class,
-                Task.class
-        },
+        entities = { Category.class, Task.class  },
         version = 12
 )
 public abstract class Database extends RoomDatabase {

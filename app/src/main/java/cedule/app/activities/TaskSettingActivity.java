@@ -295,21 +295,7 @@ public class TaskSettingActivity extends AppCompatActivity {
             new ColorDialog().show(getSupportFragmentManager(), null);
         });
 
-        new Thread(() -> {
-            AutoCompleteTextView atvCategory = findViewById(R.id.atv_category);
-
-            Category[] categories = MainActivity.getDatabase().categoryDAO().getAll();
-            String[] categoryNames = new String[categories.length];
-
-            for (int i=0; i < categories.length; i++) {
-                categoryNames[i] = categories[i].name;
-            }
-
-            runOnUiThread(() -> {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, categoryNames);
-                atvCategory.setAdapter(adapter);
-            });
-        }).start();
+        LayoutUtils.setAutoCategory(findViewById(R.id.atv_category));
 
         ((AutoCompleteTextView) findViewById(R.id.atv_category)).addTextChangedListener(new TextWatcher() {
             @Override

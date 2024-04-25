@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
@@ -17,8 +16,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 
 import cedule.app.R;
-import cedule.app.activities.MainActivity;
-import cedule.app.data.entities.Category;
+import cedule.app.utils.LayoutUtils;
 import cedule.app.utils.TimeUtils;
 
 
@@ -30,20 +28,30 @@ public class FilterDialog extends DialogFragment {
 
     private boolean isStartDate = false;
 
+    private void filter() {
+        Bundle resultBundle = new Bundle();
 
-    private void showDateTimePicker() {
+        String category = ((AutoCompleteTextView) view.findViewById(R.id.atv_category)).getText().toString();
+
+        if (category != null && category.length() > 0) {
+            resultBundle.putString("category", category);
+        }
+
+        if (startDate != null && endDate != null) {
+            resultBundle.putLong("startDate", startDate);
+            resultBundle.putLong("endDate", endDate);
+        }
+        getParentFragmentManager().setFragmentResult("filterTask", resultBundle);
+    }
+
+    private void showDatePicker() {
         new DatePickerDialog(
                 requireActivity(),
                 (datePicker, year, month, dayOfMonth) -> {
                     Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.YEAR, year);
-                    calendar.set(Calendar.MONTH, month);
-                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    calendar.set(year, month, dayOfMonth);
 
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
+                    TimeUtils.setMidNight(calendar);
 
                     if (isStartDate) {
                         startDate = calendar.getTimeInMillis();
@@ -65,60 +73,26 @@ public class FilterDialog extends DialogFragment {
 
     @Override @NonNull
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout. dialog_filter, null);
 
         view.findViewById(R.id.tv_startDate).setOnClickListener(v -> {
             isStartDate = true;
-            showDateTimePicker();
+            showDatePicker();
         });
 
         view.findViewById(R.id.tv_endDate).setOnClickListener(v -> {
             isStartDate = false;
-            showDateTimePicker();
+            showDatePicker();
         });
 
-        builder.setView(view);
+        LayoutUtils.setAutoCategory(view.findViewById(R.id.atv_category));
 
-        builder.setPositiveButton("Filter", (dialog, which) -> {
-            Bundle resultBundle = new Bundle();
-
-            String category = ((AutoCompleteTextView) view.findViewById(R.id.tv_category_desc)).getText().toString();
-
-            if (category != null && category.length() > 0) {
-                System.out.println("Get category " + category);
-                resultBundle.putString("category", category);
-            }
-
-            if (startDate != null && endDate != null) {
-                resultBundle.putLong("startDate", startDate);
-                resultBundle.putLong("endDate", endDate);
-            }
-            getParentFragmentManager().setFragmentResult("filterTask", resultBundle);
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dismiss());
-
-        AlertDialog dialog = builder.create();
-
-        new Thread(() -> {
-            AutoCompleteTextView atv_category = view.findViewById(R.id.tv_category_desc);
-
-            Category[] categories = MainActivity.getDatabase().categoryDAO().getAll();
-            String[] categoryNames = new String[categories.length];
-
-            for (int i=0; i < categories.length; i++) {
-                categoryNames[i] = categories[i].name;
-            }
-
-            getActivity().runOnUiThread(() -> {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, categoryNames);
-                atv_category.setAdapter(adapter);
-            });
-        }).start();
-
-        return dialog;
+        return new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setPositiveButton("Filter", (dialogInterface, which) -> filter())
+                .setNegativeButton("Cancel", (dialogInterface, which) -> dismiss())
+                .create();
     }
 }

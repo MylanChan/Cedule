@@ -2,6 +2,8 @@ package cedule.app.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,42 +18,39 @@ import cedule.app.R;
 
 
 public class ColorDialog extends DialogFragment {
-    private View view;
     private ImageButton ib = null;
 
     private void pickColor(View view) {
         if (ib != null) {
-            ib.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_circle));
+            ib.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle));
         }
+
         ib = (ImageButton) view;
-        ib.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_circle_selected));
+        ib.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_circle_selected));
+    }
+
+    private void handleOnClickPosBtn(DialogInterface dialogInterface, int which) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("color", ib.getImageTintList().getDefaultColor());
+
+        requireActivity().getSupportFragmentManager()
+                .setFragmentResult("pickColor", bundle);
     }
 
     @Override @NonNull
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_color, null);
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout. dialog_color, null);
-
-
-        builder.setView(view);
-
-        builder.setPositiveButton("Apply", (dialog, which) -> {
-            Bundle bundle = new Bundle();
-            bundle.putInt("color", ib.getImageTintList().getDefaultColor());
-            requireActivity().getSupportFragmentManager().setFragmentResult("pickColor", bundle);
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dismiss());
-
-        AlertDialog dialog = builder.create();
-
-        view.findViewById(R.id.ib_color_red).setOnClickListener(this::pickColor);
+        view.findViewById(R.id.ib_color_yellow).setOnClickListener(this::pickColor);
         view.findViewById(R.id.ib_color_purple).setOnClickListener(this::pickColor);
         view.findViewById(R.id.ib_color_blue).setOnClickListener(this::pickColor);
         view.findViewById(R.id.ib_color_green).setOnClickListener(this::pickColor);
 
-        return dialog;
+        return new AlertDialog.Builder(getActivity())
+                .setView(view)
+                .setPositiveButton("Apply", this::handleOnClickPosBtn)
+                .setNegativeButton("Cancel", (dialogInterface, which) -> dismiss())
+                .create();
     }
 }
