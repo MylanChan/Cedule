@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
         database = Room.databaseBuilder(this, Database.class, "app.db")
                 .createFromAsset("app.db")
-                .fallbackToDestructiveMigration()
                 .build();
 
         findViewById(R.id.ll_about).setOnClickListener(v -> {

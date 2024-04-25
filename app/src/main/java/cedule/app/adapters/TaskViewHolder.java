@@ -119,7 +119,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             view.findViewById(R.id.ll_msg).setVisibility(View.GONE);
         }
 
-        System.out.println(task.category);
         if (task.category != null) {
             new Thread(() -> {
                 Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);

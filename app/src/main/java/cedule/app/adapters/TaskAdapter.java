@@ -78,7 +78,7 @@ public class TaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void selectTask(Integer adapterPosition) {
         selectedTasks.add(adapterPosition);
-        if (isSelectMode) setMode(true);
+        if (!isSelectMode) setMode(true);
     }
 
     public void unselectTask(Integer adapterPosition) {
