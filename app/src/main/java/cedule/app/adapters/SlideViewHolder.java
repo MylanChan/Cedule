@@ -19,7 +19,6 @@ public class SlideViewHolder extends RecyclerView.ViewHolder {
     public void setData(int id) {
         Glide.with(context)
                 .load(id)
-                .error(R.drawable.ic_circle)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into((ImageView) view.findViewById(R.id.iv_image));
     }

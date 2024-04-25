@@ -28,12 +28,12 @@ public class FilterDialog extends DialogFragment {
 
     private boolean isStartDate = false;
 
-    private void filter() {
+    private void handleOnClickFilter() {
         Bundle resultBundle = new Bundle();
 
         String category = ((AutoCompleteTextView) view.findViewById(R.id.atv_category)).getText().toString();
 
-        if (category != null && category.length() > 0) {
+        if (!category.isEmpty()) {
             resultBundle.putString("category", category);
         }
 
@@ -45,36 +45,31 @@ public class FilterDialog extends DialogFragment {
     }
 
     private void showDatePicker() {
-        new DatePickerDialog(
-                requireActivity(),
-                (datePicker, year, month, dayOfMonth) -> {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(year, month, dayOfMonth);
+        Calendar curr = Calendar.getInstance();
 
-                    TimeUtils.setMidNight(calendar);
+        DatePickerDialog dialog = new DatePickerDialog(requireActivity(), (v, y, m, dayOfM) -> {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(y, m, dayOfM);
 
-                    if (isStartDate) {
-                        startDate = calendar.getTimeInMillis();
+                TimeUtils.setMidNight(calendar);
 
-                        ((TextView) view.findViewById(R.id.tv_startDate))
-                                .setText(TimeUtils.toDateString(startDate));
-                    }
-                    else {
-                        endDate = calendar.getTimeInMillis();
-                        ((TextView) view.findViewById(R.id.tv_endDate))
-                                .setText(TimeUtils.toDateString(endDate));
-                    }
+                if (isStartDate) {
+                    TextView tvStartDate = view.findViewById(R.id.tv_startDate);
+                    tvStartDate.setText(TimeUtils.toDateString(startDate = calendar.getTimeInMillis()));
+                }
+                else {
+                    TextView tvEndDate = view.findViewById(R.id.tv_endDate);
+                    tvEndDate.setText(TimeUtils.toDateString(endDate = calendar.getTimeInMillis()));
+                }
 
-                },
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)).show();
+            }, curr.get(Calendar.YEAR),curr.get(Calendar.MONTH), curr.get(Calendar.DAY_OF_MONTH));
+
+        dialog.show();
     }
 
     @Override @NonNull
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
         view = inflater.inflate(R.layout. dialog_filter, null);
 
         view.findViewById(R.id.tv_startDate).setOnClickListener(v -> {
@@ -91,7 +86,7 @@ public class FilterDialog extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
-                .setPositiveButton("Filter", (dialogInterface, which) -> filter())
+                .setPositiveButton("Filter", (dialogInterface, which) -> handleOnClickFilter())
                 .setNegativeButton("Cancel", (dialogInterface, which) -> dismiss())
                 .create();
     }

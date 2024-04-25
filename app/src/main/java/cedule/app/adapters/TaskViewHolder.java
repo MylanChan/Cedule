@@ -11,8 +11,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.concurrent.TimeUnit;
@@ -43,7 +41,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
         new Thread(() -> {
             MainActivity.getDatabase().tasksDAO()
-                    .updateTaskStatus(getTask().id, checkBox.isChecked() ? 1 : 0);
+                    .updateStatus(getTask().id, checkBox.isChecked() ? 1 : 0);
         }).start();
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
@@ -121,6 +119,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             view.findViewById(R.id.ll_msg).setVisibility(View.GONE);
         }
 
+        System.out.println(task.category);
         if (task.category != null) {
             new Thread(() -> {
                 Category category = MainActivity.getDatabase().categoryDAO().getById(task.category);
@@ -136,18 +135,18 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void handleOnClickItem() {
-        if (adapter.getMode() == TaskAdapter.MODE_NORMAL) {
+        if (!adapter.getIsSelectMode()) {
             Intent intent = new Intent(activity, TaskSettingActivity.class);
             intent.putExtra("taskId", task.id);
 
             activity.startActivityForResult(intent, 1);
         }
-        else if (adapter.getMode() == TaskAdapter.MODE_SELECT){
+        else if (adapter.getIsSelectMode()){
             toggleSelection();
         }
     }
 
-    public void initialize() {
+    public void init() {
         isSelectMode = false;
         setNormalStyle();
     }
@@ -169,7 +168,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
 
         CheckBox checkBox = view.findViewById(R.id.cb_input);
         checkBox.setOnCheckedChangeListener((v, isChecked) -> {
-            if (adapter.getMode() == TaskAdapter.MODE_SELECT) {
+            if (adapter.getIsSelectMode()) {
                 v.setChecked(!isChecked);
                 return;
             }

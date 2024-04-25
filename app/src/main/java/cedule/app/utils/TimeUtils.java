@@ -6,11 +6,11 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
-    private static String replenishZero(int target, int n) {
+    private static String replenishZero(int target) {
         String targetInString = String.valueOf(target);
 
-        if (n - targetInString.length() > 0) {
-            return "0".repeat(n - targetInString.length()) + target;
+        if (2 - targetInString.length() > 0) {
+            return "0".repeat(2 - targetInString.length()) + target;
         }
         return targetInString;
     }
@@ -20,7 +20,7 @@ public class TimeUtils {
         int min = seconds/60 - hrs*60;
         int sec = seconds - hrs * 3600 - min * 60;
 
-        return replenishZero(hrs, 2) + ":" +  replenishZero(min, 2) + ":" + replenishZero(sec, 2);
+        return replenishZero(hrs) + ":" +  replenishZero(min) + ":" + replenishZero(sec);
     }
 
 
@@ -28,7 +28,7 @@ public class TimeUtils {
         int hour = (int) TimeUnit.MILLISECONDS.toHours(ms);
         int min = (int) (TimeUnit.MILLISECONDS.toMinutes(ms) - hour * 60);
 
-        return replenishZero(hour, 2) + ":" + replenishZero(min, 2);
+        return replenishZero(hour) + ":" + replenishZero(min);
     }
 
     public static void setMidNight(Calendar calendar) {
@@ -42,8 +42,9 @@ public class TimeUtils {
         Calendar date = Calendar.getInstance();
         date.setTimeInMillis(ms);
 
+        // For example: 1 -> Feb
+        String monthInEng = new SimpleDateFormat("MMM", Locale.ENGLISH).format(ms);
 
-        return date.get(Calendar.DAY_OF_MONTH) + " " + new SimpleDateFormat("MMM", Locale.ENGLISH).format(ms) + " " + date.get(Calendar.YEAR);
-
+        return date.get(Calendar.DAY_OF_MONTH) + " " + monthInEng + " " + date.get(Calendar.YEAR);
     }
 }

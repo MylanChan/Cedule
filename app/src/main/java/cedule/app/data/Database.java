@@ -9,7 +9,7 @@ import cedule.app.data.entities.Task;
 
 @androidx.room.Database(
         entities = { Category.class, Task.class  },
-        version = 12
+        version = 13
 )
 public abstract class Database extends RoomDatabase {
     public abstract TaskDAO tasksDAO();

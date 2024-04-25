@@ -58,7 +58,7 @@
         </LinearLayout>
 
         <EditText
-            android:id="@+id/tv_task_name"
+            android:id="@+id/et_task_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="12dp"
@@ -127,7 +127,7 @@
                         android:id="@+id/ll_color"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:background="@drawable/view_rounded"
+                        android:background="@drawable/shape_rounded"
                         android:backgroundTint="#C96A6A"
                         android:orientation="vertical"></LinearLayout>
                 </LinearLayout>
@@ -149,7 +149,7 @@
                     app:srcCompat="@drawable/ic_calendar" />
 
                 <TextView
-                    android:id="@+id/tv_startDate"
+                    android:id="@+id/tv_date_title"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="12dp"
@@ -159,7 +159,7 @@
                     android:textColor="@color/onPrimaryVariant" />
 
                 <TextView
-                    android:id="@+id/tv_endDate"
+                    android:id="@+id/tv_date_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="12dp"
@@ -264,10 +264,10 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/tv_note"
+                android:id="@+id/et_note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/view_rounded"
+                android:background="@drawable/shape_rounded"
                 android:backgroundTint="#84F5F2F2"
                 android:ems="10"
                 android:gravity="top"

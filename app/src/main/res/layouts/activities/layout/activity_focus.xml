@@ -13,7 +13,7 @@
         android:layout_marginTop="-15dp"
         android:layout_marginEnd="-20dp"
         android:layout_marginBottom="300dp"
-        android:background="@drawable/view_radius_bottom"
+        android:background="@drawable/shape_radius_bottom"
         android:backgroundTint="#84F5F2F2"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -77,16 +77,16 @@
         android:text="Non disturb mode will be started"
         android:textColor="#a5a5a5"
         android:textSize="11sp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_start"
+        app:layout_constraintBottom_toTopOf="@+id/ib_control"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/btn_start"
+        android:id="@+id/ib_control"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="78dp"
-        android:background="@drawable/view_rounded"
+        android:background="@drawable/shape_rounded"
         android:backgroundTint="#454545"
         android:foreground="?attr/selectableItemBackground"
         android:padding="24dp"

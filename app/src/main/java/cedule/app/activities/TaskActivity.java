@@ -8,8 +8,6 @@ import android.widget.PopupMenu;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +19,6 @@ import java.util.List;
 import cedule.app.R;
 import cedule.app.adapters.TaskAdapter;
 import cedule.app.data.Database;
-import cedule.app.data.dao.TaskDAO;
 import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.dialogs.FilterDialog;
@@ -39,16 +36,16 @@ public class TaskActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
 
                 if (itemId == R.id.item_sort_az) {
-                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInNameAsc();
+                    tasks = MainActivity.getDatabase().tasksDAO().getInNameAsc();
                 }
                 else if (itemId == R.id.item_sort_za) {
-                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInNameDesc();
+                    tasks = MainActivity.getDatabase().tasksDAO().getInNameDesc();
                 }
                 else if (itemId == R.id.item_sort_deadline) {
-                    tasks = MainActivity.getDatabase().tasksDAO().getTasksInDeadline();
+                    tasks = MainActivity.getDatabase().tasksDAO().getInDeadline();
                 }
-                else if (itemId == R.id.item_sort_default) {
-                    tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+                else if (itemId == R.id.item_sort_default) { // creation time
+                    tasks = MainActivity.getDatabase().tasksDAO().getAll();
                 }
 
                 List<Task> finalTasks = tasks;
@@ -61,28 +58,22 @@ public class TaskActivity extends AppCompatActivity {
         menu.show();
     }
     private void handleOnClickDiscard() {
-        RecyclerView rvTasks = findViewById(R.id.rv_tasks);
-
-        new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Discard all selected tasks?")
                 .setPositiveButton("Discard", (dialog, which) -> {
+                    RecyclerView rvTasks = findViewById(R.id.rv_tasks);
                     TaskAdapter adapter = (TaskAdapter) rvTasks.getAdapter();
 
                     if (adapter != null) adapter.discardSelectedTasks();
-                    dialog.dismiss();
                 })
+                .setNegativeButton("Cancel", null);
 
-                .show();
+        builder.show();
     }
 
     private void showFocusPage() {
         Intent intent = new Intent(this, FocusActivity.class);
         startActivity(intent);
-
-        // navigate back to overall page
-        // focus page show as a Activity rather than a Fragment
-        TabLayout.Tab tabItem1 = ((TabLayout) findViewById(R.id.tl_tasks)).getTabAt(1);
-        if (tabItem1 != null) tabItem1.select();
     }
 
     private void getTasksByCategory(String name) {
@@ -91,7 +82,7 @@ public class TaskActivity extends AppCompatActivity {
             Category category = MainActivity.getDatabase().categoryDAO().getByName(name);
 
             if (category != null) {
-                List<Task> tasks = MainActivity.getDatabase().tasksDAO().getTasksByCategory(category.id);
+                List<Task> tasks = MainActivity.getDatabase().tasksDAO().getByCategory(category.id);
                 runOnUiThread(() -> {
                     rvTasks.setAdapter(new TaskAdapter(this, tasks));
                 });
@@ -103,23 +94,60 @@ public class TaskActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void initOnTabSelectedListener() {
+    private void setFilterTaskListener() {
+        getSupportFragmentManager().setFragmentResultListener("filterTask", this, (key, result) -> {
+            TabLayout tlTasks = findViewById(R.id.tl_tasks);
+            tlTasks.getTabAt(0).select();
+
+            new Thread(() -> {
+                Database db = MainActivity.getDatabase();
+
+                String categoryName = result.getString("category");
+
+                long startDate = result.getLong("startDate", -1);
+                long endDate = result.getLong("endDate", -1);
+
+                List<Task> tasks = null;
+
+                Category category = db.categoryDAO().getByName(categoryName);
+                if (categoryName == null || category == null) {
+                    if (startDate != -1 && endDate != -1) {
+                        tasks = db.tasksDAO().getByFilter(startDate, endDate);
+                    }
+                }
+                else if (startDate == -1 || endDate == -1) {
+                    tasks = db.tasksDAO().getByCategory(category.id);
+                }
+                else {
+                    tasks = db.tasksDAO().getByFilter(category.id, startDate, endDate);
+                }
+
+                if (tasks == null) return;
+
+                List<Task> finalTasks = tasks; // final variable for lambda function
+                runOnUiThread(() -> {
+                    RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+                    rvTasks.setAdapter(new TaskAdapter(this, finalTasks));
+                });
+            }).start();
+
+        });
+    }
+
+    private void setOnTabSelectedListener() {
         TabLayout tlTasks = findViewById(R.id.tl_tasks);
 
         tlTasks.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                RecyclerView rvTasks = findViewById(R.id.rv_tasks);
+                if (tab.getPosition() == 0) {
+                    loadAllTasks();
+                    return;
+                }
 
-                switch (tab.getPosition()) {
-                    case 0: {
-                        loadAllTasks();
-                        return;
-                    }
-                    default: {
-                        CharSequence tabText = tab.getText();
-                        if (tabText != null) getTasksByCategory(tabText.toString().toLowerCase());
-                    }
+                CharSequence tabText = tab.getText();
+                if (tabText != null) {
+                    getTasksByCategory(tabText.toString().toLowerCase());
                 }
             }
 
@@ -136,7 +164,7 @@ public class TaskActivity extends AppCompatActivity {
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
 
         new Thread(() -> {
-            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
+            List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAll();
 
             runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
         }).start();
@@ -146,15 +174,7 @@ public class TaskActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            RecyclerView rvTasks = findViewById(R.id.rv_tasks);
-
-            new Thread(() -> {
-                List<Task> tasks = MainActivity.getDatabase().tasksDAO().getAllTasks();
-
-                runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, tasks)));
-            }).start();
-        }
+        if (resultCode == RESULT_OK) loadAllTasks();
     }
 
     @Override
@@ -171,8 +191,7 @@ public class TaskActivity extends AppCompatActivity {
             startActivityForResult(intent, 2);
         });
 
-
-        initOnTabSelectedListener();
+        setOnTabSelectedListener();
 
         findViewById(R.id.ib_focus).setOnClickListener(v -> showFocusPage());
         findViewById(R.id.ib_filter).setOnClickListener(v -> {
@@ -185,39 +204,6 @@ public class TaskActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(getResources().getColor(R.color.surface));
         LayoutUtils.setBarColor(getWindow());
 
-        getSupportFragmentManager().setFragmentResultListener("filterTask", this, (requestKey, result) -> {
-            TabLayout tlTasks = findViewById(R.id.tl_tasks);
-            tlTasks.getTabAt(0).select();
-
-            new Thread(() -> {
-                Database db = MainActivity.getDatabase();
-
-                String categoryName = result.getString("category");
-
-                long startDate = result.getLong("startDate", -1);
-                long endDate = result.getLong("endDate", -1);
-
-                List<Task> tasks = null;
-
-                Category category = db.categoryDAO().getByName(categoryName);
-
-                if (categoryName == null || category == null) {
-                    if (startDate != -1 && endDate != -1) {
-                        tasks = db.tasksDAO().getTaskByFilter(startDate, endDate);
-                    }
-                }
-                else if (startDate == -1 || endDate == -1) {
-                    tasks = db.tasksDAO().getTasksByCategory(category.id);
-                }
-                else {
-                    tasks = db.tasksDAO().getTaskByFilter(category.id, startDate, endDate);
-                }
-
-                if (tasks == null) return;
-                List<Task> finalTasks = tasks;
-                runOnUiThread(() -> rvTasks.setAdapter(new TaskAdapter(this, finalTasks)));
-            }).start();
-
-        });
+        setFilterTaskListener();
     }
 }

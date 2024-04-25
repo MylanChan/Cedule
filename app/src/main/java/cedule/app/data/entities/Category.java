@@ -1,7 +1,5 @@
 package cedule.app.data.entities;
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

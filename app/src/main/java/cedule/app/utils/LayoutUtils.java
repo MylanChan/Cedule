@@ -1,13 +1,11 @@
 package cedule.app.utils;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 

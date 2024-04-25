@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import cedule.app.R;
 
 public class SlideAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private int[] imageUrlList = new int[] {R.drawable.drawable_task, R.drawable.drawable_settings};
+    private final int[] imgId = new int[] {R.drawable.drawable_task, R.drawable.drawable_settings};
 
-    private Context context;
+    private final Context context;
 
     @Override @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -25,7 +25,7 @@ public class SlideAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((SlideViewHolder) holder).setData(imageUrlList[position]);
+        ((SlideViewHolder) holder).setData(imgId[position]);
     }
 
     @Override
