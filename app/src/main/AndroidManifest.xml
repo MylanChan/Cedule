@@ -18,6 +18,10 @@
         tools:targetApi="31">
 
         <service android:name=".services.TaskNotifyService" />
+
+        <activity
+            android:name=".activities.AboutUsActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.TaskSettingActivity"
             android:exported="false" />
@@ -25,7 +29,7 @@
             android:name=".activities.FocusActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.DocumentActivity"
+            android:name=".activities.StoryBehindActivity"
             android:exported="false" />
         <activity
             android:name=".activities.TaskActivity"
@@ -35,7 +39,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

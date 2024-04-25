@@ -312,12 +312,14 @@ public class TaskSettingActivity extends AppCompatActivity {
                     findViewById(R.id.ll_color_picker).setVisibility(View.VISIBLE);
                     new Thread(() -> {
                         Category category = MainActivity.getDatabase().categoryDAO().getByName(text);
-                        if (category != null) {
-                            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(category.color));
-                        }
-                        else {
-                            findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-                        }
+                        runOnUiThread(() -> {
+                            if (category != null) {
+                                findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(category.color));
+                            }
+                            else {
+                                findViewById(R.id.ll_color).setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                            }
+                        });
                     }).start();
                 }
                 else {

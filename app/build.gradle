@@ -31,7 +31,7 @@ android {
             res {
                 srcDirs 'src/main/res',
                         'src/main/res/layouts/activities',
-                        'src/main/res/layouts/fragments', 'src\\main\\res', 'src\\main\\res\\layouts\\adapters', 'src\\main\\res\\layouts\\viewholders', 'src\\main\\res\\layouts\\dialogs'
+                        'src/main/res/layouts/fragments', 'src\\main\\res', 'src\\main\\res\\layouts\\adapters', 'src\\main\\res\\layouts\\viewholders', 'src\\main\\res\\layouts\\dialogs', 'src\\main\\res\\drawables'
             }
             java {
                 srcDirs 'src\\main\\java'
@@ -45,8 +45,11 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    // Image Slider
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'com.google.android.material:material:1.5.0'
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

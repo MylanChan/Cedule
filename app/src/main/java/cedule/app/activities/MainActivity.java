@@ -1,8 +1,6 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.room.Room;
 
 import android.content.Intent;
@@ -113,15 +111,11 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         findViewById(R.id.ll_about).setOnClickListener(v -> {
-            Intent intent = new Intent(this, DocumentActivity.class);
-            intent.putExtra("type", DocumentActivity.TYPE_ABOUT);
-            startActivity(intent);
+            startActivity(new Intent(this, AboutUsActivity.class));
         });
 
         findViewById(R.id.ll_story).setOnClickListener(v -> {
-            Intent intent = new Intent(this, DocumentActivity.class);
-            intent.putExtra("type", DocumentActivity.TYPE_STORY);
-            startActivity(intent);
+            startActivity(new Intent(this, StoryBehindActivity.class));
         });
 
         Button btnTask = findViewById(R.id.btn_task);
