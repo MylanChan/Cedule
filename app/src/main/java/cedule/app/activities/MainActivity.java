@@ -1,6 +1,7 @@
 package cedule.app.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.AutoMigration;
 import androidx.room.Room;
 
 import android.content.Intent;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setNavigationBarColor(0x75E8E8E8);
         LayoutUtils.setBarColor(getWindow());
 
-        database = Room.databaseBuilder(this, Database.class, "app.db")
+        database = Room.databaseBuilder(this, Database.class, "app")
                 .createFromAsset("app.db")
                 .build();
 

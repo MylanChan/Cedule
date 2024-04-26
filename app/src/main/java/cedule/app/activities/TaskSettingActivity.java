@@ -37,7 +37,6 @@ import cedule.app.data.entities.Category;
 import cedule.app.data.entities.Task;
 import cedule.app.dialogs.ColorDialog;
 import cedule.app.services.TaskNotifyReceiver;
-import cedule.app.services.TaskNotifyService;
 import cedule.app.utils.LayoutUtils;
 import cedule.app.utils.TimeUtils;
 
@@ -185,7 +184,7 @@ public class TaskSettingActivity extends AppCompatActivity {
                     note.isEmpty() ? null : note
             );
 
-            updatePref();
+            if (cbInput.isChecked()) updatePref();
         }).start();
 
         if (startDate != null && isNotify) {
