@@ -46,6 +46,21 @@ public class TaskNotifyService extends Service {
             manager.createNotificationChannel(channel);
         }
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), FocusActivity.class),
+                PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getApplicationContext(), "Cedule")
+                        .setContentIntent(pendingIntent)
+                        .setSmallIcon(R.drawable.ic_task)
+                        .setColor(Color.GRAY)
+                        .setContentTitle("Cedule")
+                        .setContentText("Time to work")
+                        .setOngoing(true);
+
+        startForeground(1, builder.build());
+
         if (player != null) player.release();
         player = new AlarmPlayer(getApplicationContext());
         player.run();
@@ -61,20 +76,5 @@ public class TaskNotifyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                new Intent(getApplicationContext(), FocusActivity.class),
-                PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext(), "Cedule")
-                        .setContentIntent(pendingIntent)
-                        .setSmallIcon(R.drawable.ic_task)
-                        .setColor(Color.GRAY)
-                        .setContentTitle("Cedule")
-                        .setContentText("Time to work")
-                        .setOngoing(true);
-
-        startForeground(1, builder.build());
     }
 }
