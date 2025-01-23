@@ -1,0 +1,112 @@
+package cedule.app.ui.components.tasksetting
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import cedule.app.R
+import cedule.app.activities.ClearIconButton
+import cedule.app.activities.TaskFieldIcon
+import cedule.app.utils.TimeUtils
+import cedule.app.viewmodels.TaskEditViewModel
+import java.util.Calendar
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimeField() {
+    val editVM = hiltViewModel<TaskEditViewModel>()
+    var isModalShowed by remember { mutableStateOf(false) }
+
+    val deadline by remember { derivedStateOf { editVM.startTime } }
+
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable { isModalShowed = true }
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TaskFieldIcon(deadline != null, R.drawable.ic_time_fill, R.drawable.ic_time)
+        Text("Time", Modifier.padding(start = 12.dp, end = 24.dp))
+
+        deadline?.let {
+            Text(
+                text = TimeUtils.toTimeNotation(deadline!!),
+                Modifier.weight(1f),
+                textAlign = TextAlign.End
+            )
+
+            ClearIconButton(Modifier.padding(start=8.dp)) {
+                editVM.startTime = null
+            }
+        }
+    }
+
+    if (isModalShowed) {
+        TimePickerDialog(deadline, { isModalShowed = false }, {
+            isModalShowed = false
+        })
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerDialog(
+    time: Int?,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    val editVM = hiltViewModel<TaskEditViewModel>()
+    val currentTime = Calendar.getInstance()
+
+    time?.let {
+        currentTime.timeInMillis = it * 60 * 1000L
+    }
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true,
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Dismiss")
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    editVM.startTime = timePickerState.hour*60 + timePickerState.minute
+                    onConfirm()
+                },
+                content = { Text("OK") }
+            )
+        },
+        text = {
+            TimePicker(timePickerState)
+        }
+    )
+}

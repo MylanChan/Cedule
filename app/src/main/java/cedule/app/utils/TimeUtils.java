@@ -20,9 +20,11 @@ public class TimeUtils {
         int min = seconds/60 - hrs*60;
         int sec = seconds - hrs * 3600 - min * 60;
 
-        return replenishZero(hrs) + ":" +  replenishZero(min) + ":" + replenishZero(sec);
+        if (hrs > 0) {
+            return replenishZero(hrs) + ":" +  replenishZero(min) + ":" + replenishZero(sec);
+        }
+        return replenishZero(min) + ":" + replenishZero(sec);
     }
-
 
     public static String toTimeString(long ms) {
         int hour = (int) TimeUnit.MILLISECONDS.toHours(ms);
