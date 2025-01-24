@@ -1,48 +1,42 @@
 package cedule.app.activities;
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cedule.app.R
+import cedule.app.ui.components.CreateTaskFAB
 import cedule.app.ui.components.IconBox
-import cedule.app.ui.components.TaskEntry
-import cedule.app.ui.components.Toolbar
+import cedule.app.ui.components.page.HomePage
 import cedule.app.ui.theme.CeduleTheme
 import cedule.app.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,13 +48,45 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CeduleTheme {
+                var route by remember { mutableStateOf<Screen>(Screen.Home) }
+
                 Scaffold(
                     topBar = { TopAppBar() },
-                    floatingActionButton = { CreateTaskFAB() }
+                    floatingActionButton = { CreateTaskFAB() },
+                    isFloatingActionButtonDocked = true,
+                    bottomBar = {
+                        Box(Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow).height(65.dp).fillMaxWidth())
+                        androidx.compose.material.BottomAppBar(
+                            modifier = Modifier
+                                .navigationBarsPadding()
+                                .height(65.dp)
+                                .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
+                            cutoutShape = CircleShape,
+                            backgroundColor = MaterialTheme.colorScheme.surfaceBright,
+                            elevation = 22.dp
+                        ) {
+                            listOf(Screen.Home, Screen.Focus).forEach { screen ->
+                                IconBox(screen.icon, "Switch the page", Modifier.width(120.dp)) { route = screen }
+                            }
+                        }
+                    },
+
                 ) { innerPadding ->
-                    Column(Modifier.padding(innerPadding)) {
-                        Toolbar(Modifier.padding(top = 12.dp))
-                        TaskList(Modifier.weight(1f))
+                    Column(
+                        Modifier
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(innerPadding),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        when (route) {
+                            Screen.Home -> {
+                                HomePage(Modifier.weight(1f).fillMaxSize())
+                            }
+                            Screen.Focus -> {
+
+                            }
+                        }
+
                     }
                 }
             }
@@ -70,79 +96,30 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun TopAppBar(modifier: Modifier = Modifier) {
-    val activity = LocalContext.current as Activity
+    val taskVM = hiltViewModel<TaskViewModel>()
+    val todayTaskCount by taskVM.todayTaskCount.collectAsState(0)
 
-    Surface(shadowElevation = 4.dp) {
-        Row(
-            modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(top = 8.dp)
-        ) {
-            IconBox(R.drawable.ic_focus, "Open focus page") {
-                startActivity(activity, FocusActivity::class.java)
-            }
-
-            var selectedTabIndex by remember { mutableIntStateOf(0) }
-            val tabTitles = listOf("Overall", "Work", "Study")
-
-            TabRow(selectedTabIndex) {
-                tabTitles.forEachIndexed { index, title ->
-                    Tab(
-                        text = { TabText(title, selectedTabIndex == index) },
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TabText(text: String, isSelected: Boolean, modifier: Modifier = Modifier) {
-    Text(
-        text,
-        modifier,
-        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-    )
-}
-
-private fun startActivity(from: Activity, to: Class<out ComponentActivity>) {
-    from.startActivity(Intent(from, to))
-}
-
-@Composable
-private fun CreateTaskFAB(modifier: Modifier = Modifier) {
-    val context = LocalContext.current as Activity
-
-    FloatingActionButton(
-        onClick = { startActivity(context, TaskSettingActivity::class.java) },
+    Column(
         modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding()
+            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(Icons.Default.Add, "Create a new task")
+        Text("Welcome Back!", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+
+        if (todayTaskCount > 0)
+            Text("$todayTaskCount tasks to be completed today", style = MaterialTheme.typography.bodyMedium)
+        else
+            Text("You done all the tasks today! ദ്ദി ˉ͈̀꒳ˉ͈́ )✧")
+        HorizontalDivider(Modifier.padding(vertical = 12.dp))
     }
 }
 
-@Composable
-private fun TaskList(modifier: Modifier = Modifier) {
-    val taskVM: TaskViewModel = hiltViewModel()
-    val tasks by taskVM.tasks.collectAsState(initial = emptyList())
 
-    if (tasks.isNotEmpty()) {
-        LazyColumn(modifier.padding(horizontal = 12.dp)) {
-            items(tasks) {
-                TaskEntry(it, modifier.padding(vertical = 8.dp))
-            }
-        }
-    }
-    else {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("ദ്ദി ˉ͈̀꒳ˉ͈́ )", style = MaterialTheme.typography.titleLarge)
-                Text("You done all the tasks")
-            }
-        }
-    }
+
+sealed class Screen(val title: String?, @DrawableRes val icon: Int) {
+    data object Home : Screen("PickUp", R.drawable.ic_calendar)
+    data object Focus : Screen("Profile", R.drawable.ic_focus)
 }

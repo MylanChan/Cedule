@@ -1,16 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Cedule" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@color/surface</item>
-        <item name="android:windowLightStatusBar">@color/primary</item>
-        <item name="android:navigationBarColor">@color/primary</item>
-        <item name="android:textColor">@color/onPrimary</item>
-    </style>
+    <style name="Theme"></style>
 
-    <style name="Theme.Cedule" parent="Base.Theme.Cedule" />
-
-    <style name="SelectableItemBackground">
-        <item name="android:background">?selectableItemBackgroundBorderless</item>
-        <item name="android:radius">90dp</item>
+    <style name="Theme.Cedule">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
+    
 </resources>

@@ -3,10 +3,8 @@ package cedule.app.data.dao;
 import androidx.room.Dao;
 import androidx.room.Query;
 import androidx.room.*
-import cedule.app.data.entities.Category
 import cedule.app.data.entities.Task
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @Dao
 interface TaskDAO {
@@ -31,22 +29,8 @@ interface TaskDAO {
     @Query("UPDATE tasks SET isDone=:isDone WHERE id=:id")
     suspend fun updateStatus(id: Int, isDone: Int)
 
-    @Query("SELECT * FROM tasks ORDER BY title DESC")
-    fun getInNameDesc(): Flow<List<Task>>
-
-    @Query("SELECT * FROM tasks ORDER BY startDate")
-    fun getInDeadline(): Flow<List<Task>>
-
-    @Query("SELECT * FROM tasks ORDER BY title")
-    fun getInNameAsc(): Flow<List<Task>>
-
-    @Query("SELECT * FROM tasks " +
-            "WHERE category=:category AND startDate BETWEEN :startDate AND :endDate")
-    fun getByFilter(category: Int, startDate: Long, endDate: Long): Flow<List<Task>>
-
-    @Query("SELECT * FROM tasks " +
-            "WHERE startDate BETWEEN :startDate AND :endDate")
-    fun getByFilter(startDate: Long, endDate: Long): Flow<List<Task>>
+    @Query("SELECT * FROM tasks WHERE startDate == :startDate")
+    fun getByDate(startDate: Long): Flow<List<Task>>
 
     @Transaction
     suspend fun insertOrUpdate(task: Task) {
@@ -55,4 +39,7 @@ interface TaskDAO {
 
     @Query("SELECT * FROM tasks ORDER BY createTime DESC LIMIT 1")
     suspend fun getLatestTask(): Task?
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE startDate=:date")
+    fun countTasks(date: Long): Flow<Int>
 }

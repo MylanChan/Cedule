@@ -1,40 +1,60 @@
 package cedule.app.viewmodels
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cedule.app.data.Database
 import cedule.app.data.entities.Task
-import cedule.app.services.TaskNotifyReceiver
 import cedule.app.utils.AlarmUtils
+import cedule.app.utils.TimeUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(private val db: Database) : ViewModel() {
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    val tasks: StateFlow<List<Task>> get() = _tasks
+    private val _selectedDate = MutableStateFlow<Long?>(TimeUtils.getTodayMidnight())
+    val selectedDate get() = _selectedDate
+
+    fun setDate(date: Long?) {
+        _selectedDate.value = date
+    }
+
+    private var orderType = MutableStateFlow(Sort.SORT_BY_DEFAULT)
+
+    var todayTaskCount = db.tasksDAO().countTasks(TimeUtils.getTodayMidnight())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tasks = _selectedDate.flatMapLatest { date ->
+        val taskList = when (date == null) {
+            true -> db.tasksDAO().getAll()
+            false -> db.tasksDAO().getByDate(date)
+        }
+
+        taskList.map { items ->
+            when (orderType.value) {
+                Sort.SORT_BY_DEFAULT -> items
+                Sort.SORT_BY_NAME_ASC -> items.sortedBy { it.title }
+                Sort.SORT_BY_NAME_DESC -> items.sortedByDescending { it.title }
+                Sort.SORT_BY_DEADLINE -> items.sortedBy { it.startTime }
+            }
+        }
+    }.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     var pendingDelete = MutableStateFlow<List<Int>>(emptyList())
-
-    private fun updateTasks(flow: Flow<List<Task>>) {
-        viewModelScope.launch {
-            flow.collect { _tasks.value = it }
-        }
-    }
-
-    init {
-        updateTasks(db.tasksDAO().getAll())
-    }
 
     fun setDone(id: Int, isDone: Boolean) {
         viewModelScope.launch {
@@ -42,13 +62,8 @@ class TaskViewModel @Inject constructor(private val db: Database) : ViewModel() 
         }
     }
 
-    fun setOrder(type: Sort) {
-        val flow = when (type) {
-            Sort.SORT_BY_NAME_DESC -> db.tasksDAO().getInNameAsc()
-            Sort.SORT_BY_NAME_ASC -> db.tasksDAO().getInNameDesc()
-            Sort.SORT_BY_DEADLINE -> db.tasksDAO().getInDeadline()
-        }
-        updateTasks(flow)
+    fun setOrder(sort: Sort) {
+        orderType.value = sort
     }
 
     fun getTask(id: Int): Flow<Task?> {
@@ -83,6 +98,7 @@ class TaskViewModel @Inject constructor(private val db: Database) : ViewModel() 
 }
 
 enum class Sort {
+    SORT_BY_DEFAULT,
     SORT_BY_NAME_ASC,
     SORT_BY_NAME_DESC,
     SORT_BY_DEADLINE,

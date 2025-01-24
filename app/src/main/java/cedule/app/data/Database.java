@@ -16,6 +16,4 @@ public abstract class Database extends RoomDatabase {
     public abstract TaskDAO tasksDAO();
 
     public abstract CategoryDAO categoryDAO();
-
-
 }
