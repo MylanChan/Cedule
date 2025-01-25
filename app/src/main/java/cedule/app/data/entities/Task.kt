@@ -29,7 +29,7 @@ data class Task(
     val title: String? = null,
 
     @ColumnInfo(name = "category")
-    val category: Int? = null,
+    var category: Int? = null,
 
     @ColumnInfo(name = "startDate")
     val startDate: Long? = null,

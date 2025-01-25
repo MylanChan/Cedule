@@ -2,6 +2,7 @@ package cedule.app.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,9 @@ class TaskEditViewModel : ViewModel() {
     var isDone by mutableIntStateOf(0)
     var isNotify by mutableStateOf<Int?>(null)
     var note by mutableStateOf("")
+
+    var categoryName by mutableStateOf("")
+    var categoryColor by mutableLongStateOf(0xFF7BCCF6)
 
     fun saveTask(onSave: (Task) -> Unit) {
         val t = Task(id, createTime, title, category, startDate, startTime, isDone, isNotify, note)

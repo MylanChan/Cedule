@@ -13,21 +13,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import cedule.app.activities.ColorSelectionDialog
 import cedule.app.data.entities.Category
 import cedule.app.ui.components.IconBox
 import cedule.app.viewmodels.CategoryViewModel
+import cedule.app.viewmodels.TaskEditViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 private fun MenuItem(text: String, onClick: () -> Unit) {
@@ -39,51 +44,78 @@ private fun MenuItem(text: String, onClick: () -> Unit) {
 
 @Composable
 private fun ColorBox(
-    color: Color,
+    color: Long,
     modifier: Modifier = Modifier,
     onClick: (Color) -> Unit
 ) {
-    IconButton(onClick = { onClick(color) }, modifier) {
+    IconButton(onClick = { onClick(Color(color)) }, modifier) {
         Box(
             Modifier
                 .size(24.dp)
-                .background(color, CircleShape)
+                .background(Color(color), CircleShape)
         )
     }
 }
 
 @Composable
-private fun CategoryColorBox(c: Category?) {
-    val color = when (c == null) {
-        true -> MaterialTheme.colorScheme.primary
-        else -> Color(c.color!!)
-    }
+private fun CategoryColorBox(modifier: Modifier = Modifier) {
+    val editVM = hiltViewModel<TaskEditViewModel>()
+    val color by remember { derivedStateOf { editVM.categoryColor } }
 
-    ColorBox(color) {
-
+    var isDialogShowed by remember { mutableStateOf(false) }
+    if (isDialogShowed) {
+        ColorSelectionDialog(onDismiss = { isDialogShowed = false }) {
+            editVM.categoryColor = it
+        }
     }
+    ColorBox(color, modifier) { isDialogShowed = true }
 }
 
 @Composable
 fun AutoCompleteTextField(modifier: Modifier = Modifier) {
-    var textInput by remember { mutableStateOf(TextFieldValue("")) }
+    val editVM: TaskEditViewModel = hiltViewModel()
+    val categoryVM: CategoryViewModel = hiltViewModel()
+
+    val textInput by remember { derivedStateOf { editVM.categoryName } }
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    val categoryVM: CategoryViewModel = hiltViewModel()
-    val currentCategory by categoryVM.getByName(textInput.text).collectAsState(null)
+    val currentCategory by categoryVM.getByName(textInput).collectAsState(null)
+
+    val coroutine = CoroutineScope(Dispatchers.IO)
+
+    val categoryId by remember { derivedStateOf { editVM.category } }
+    LaunchedEffect(categoryId) {
+        if (editVM.category != null) {
+            coroutine.launch {
+                categoryVM.getCategory(editVM.category!!).collect {
+                    it?.let {
+                        editVM.categoryName = it.name
+                        editVM.categoryColor = it.color!!.toLong()
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(currentCategory) {
+        currentCategory?.let {
+            editVM.categoryName = it.name
+            editVM.categoryColor = it.color!!.toLong()
+        }
+    }
 
     Box(modifier) {
         OutlinedTextField(
             textInput,
             onValueChange = {
-                if (it.text.length > 15) return@OutlinedTextField
-                textInput = it
+                if (it.length > 15) return@OutlinedTextField
+                editVM.categoryName = it
 
-                isMenuExpanded = it.text.isNotEmpty()
+                isMenuExpanded = it.isNotEmpty()
             },
             trailingIcon = {
-                when (textInput.text.isNotEmpty()) {
-                    true -> CategoryColorBox(currentCategory)
+                when (textInput.isNotEmpty()) {
+                    true -> CategoryColorBox()
                     else -> IconBox(Icons.Default.ArrowDropDown, "Expand drop down menu") {
                         isMenuExpanded = !isMenuExpanded
                     }
@@ -94,11 +126,12 @@ fun AutoCompleteTextField(modifier: Modifier = Modifier) {
         )
 
         // show category suggestion based on the user input
-        val suggestions by categoryVM.getSimilar(textInput.text)
+        val suggestions by categoryVM.getSimilar(textInput)
             .collectAsState(emptyList())
 
-        SuggestionDropdownMenu(isMenuExpanded, suggestions, { isMenuExpanded = it }) {
-            textInput = TextFieldValue(it.name, TextRange(it.name.length))
+        SuggestionDropdownMenu(isMenuExpanded, suggestions, { isMenuExpanded = it }) { name, color ->
+            editVM.categoryName = name
+            editVM.categoryColor = color
         }
     }
 }
@@ -108,7 +141,7 @@ private fun SuggestionDropdownMenu(
     isExpanded: Boolean,
     categories: List<Category>,
     setIsExpanded: (Boolean) -> Unit,
-    onClickItem: (Category) -> Unit
+    onClickItem: (String, Long) -> Unit
 ) {
     DropdownMenu(
         expanded = isExpanded,
@@ -118,7 +151,7 @@ private fun SuggestionDropdownMenu(
         if (categories.isNotEmpty()) {
             categories.forEach {
                 MenuItem(it.name) {
-                    onClickItem(it)
+                    onClickItem(it.name, it.color!!.toLong())
                     setIsExpanded(false)
                 }
             }

@@ -4,10 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -20,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,13 +29,12 @@ import cedule.app.utils.TimeUtils
 import cedule.app.viewmodels.TaskEditViewModel
 import java.util.Calendar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeField() {
     val editVM = hiltViewModel<TaskEditViewModel>()
     var isModalShowed by remember { mutableStateOf(false) }
 
-    val deadline by remember { derivedStateOf { editVM.startTime } }
+    val startTime by remember { derivedStateOf { editVM.startTime } }
 
     Row(
         Modifier
@@ -46,12 +43,20 @@ fun TimeField() {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TaskFieldIcon(deadline != null, R.drawable.ic_time_fill, R.drawable.ic_time)
-        Text("Time", Modifier.padding(start = 12.dp, end = 24.dp))
+        TaskFieldIcon(startTime != null, R.drawable.ic_time_fill, R.drawable.ic_time)
+        Text(
+            "Time",
+            Modifier.padding(start = 12.dp, end = 24.dp),
+            color =
+                if (startTime != null)
+                    MaterialTheme.colorScheme.onSurface
+                else
+                    MaterialTheme.colorScheme.outline
+        )
 
-        deadline?.let {
+        startTime?.let {
             Text(
-                text = TimeUtils.toTimeNotation(deadline!!),
+                text = TimeUtils.toTimeNotation(startTime!!),
                 Modifier.weight(1f),
                 textAlign = TextAlign.End
             )
@@ -63,7 +68,7 @@ fun TimeField() {
     }
 
     if (isModalShowed) {
-        TimePickerDialog(deadline, { isModalShowed = false }, {
+        TimePickerDialog(startTime, { isModalShowed = false }, {
             isModalShowed = false
         })
     }

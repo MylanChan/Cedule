@@ -40,6 +40,6 @@ interface TaskDAO {
     @Query("SELECT * FROM tasks ORDER BY createTime DESC LIMIT 1")
     suspend fun getLatestTask(): Task?
 
-    @Query("SELECT COUNT(*) FROM tasks WHERE startDate=:date")
+    @Query("SELECT COUNT(*) FROM tasks WHERE startDate=:date AND isDone=0")
     fun countTasks(date: Long): Flow<Int>
 }

@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +27,12 @@ import cedule.app.viewmodels.TaskEditViewModel
 
 @Composable
 fun TaskNoteSection(modifier: Modifier = Modifier) {
-    val editVM = hiltViewModel<TaskEditViewModel>()
-    var textState by remember { mutableStateOf(TextFieldValue(editVM.note)) }
+    val editVM: TaskEditViewModel = hiltViewModel()
+
+    // Use derivedStateOf to create a reactive text state from the ViewModel's note
+    val textState by remember {
+        derivedStateOf { editVM.note }
+    }
 
     HorizontalDivider(Modifier.padding(16.dp))
 
@@ -38,9 +43,9 @@ fun TaskNoteSection(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painterResource(cedule.app.R.drawable.ic_note),
+            painter = painterResource(cedule.app.R.drawable.ic_note),
             contentDescription = null,
-            Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp)
         )
         Text(
             text = "Note",
@@ -50,11 +55,10 @@ fun TaskNoteSection(modifier: Modifier = Modifier) {
 
     OutlinedTextField(
         value = textState,
-        onValueChange = {
-            textState = it
-            editVM.note = it.text
+        onValueChange = { newText ->
+            editVM.note = newText // Update the ViewModel
         },
-        Modifier
+        modifier = Modifier
             .height(250.dp)
             .fillMaxWidth()
             .padding(12.dp)

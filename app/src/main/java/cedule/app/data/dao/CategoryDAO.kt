@@ -31,7 +31,7 @@ interface CategoryDAO {
     fun getAll(): Flow<List<Category>>
 
     @Transaction
-    suspend fun insertUpdateCategory(name: String, color: Int) {
+    suspend fun insertOrUpdate(name: String, color: Int) {
         val category = getByName(name).first()
         if (category != null) {
             update(category.id!!, name, color)

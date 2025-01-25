@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -33,7 +34,7 @@ fun DateField() {
     val editVM = hiltViewModel<TaskEditViewModel>()
     var isModalShowed by remember { mutableStateOf(false) }
 
-    val deadline by remember { derivedStateOf { editVM.startDate } }
+    val startDate by remember { derivedStateOf { editVM.startDate } }
 
     Row(
         Modifier
@@ -42,12 +43,20 @@ fun DateField() {
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TaskFieldIcon(deadline != null, R.drawable.ic_calendar_fill, R.drawable.ic_calendar)
-        Text("Date", Modifier.padding(start = 12.dp, end = 24.dp))
+        TaskFieldIcon(startDate != null, R.drawable.ic_calendar_fill, R.drawable.ic_calendar)
+        Text(
+            "Date",
+            Modifier.padding(start = 12.dp, end = 24.dp),
+            color =
+                if (startDate != null)
+                    MaterialTheme.colorScheme.onSurface
+                else
+                    MaterialTheme.colorScheme.outline
+        )
 
-        deadline?.let {
+        startDate?.let {
             Text(
-                text = TimeUtils.toDateString(deadline!!),
+                text = TimeUtils.toDateString(startDate!!),
                 Modifier.weight(1f),
                 textAlign = TextAlign.End
             )
@@ -59,7 +68,7 @@ fun DateField() {
     }
 
     if (isModalShowed) {
-        DatePickerDialog(deadline, { editVM.startDate = it }) {
+        DatePickerDialog(startDate, { editVM.startDate = it }) {
             isModalShowed = false
         }
     }
@@ -86,13 +95,12 @@ private fun DatePickerDialog(
                     val offsetInMillis = calendar.timeZone.getOffset(it)
                     onDateSelected(it-offsetInMillis)
                 }
-
                 onDismiss()
             }
         },
         dismissButton = { DateDialogTextButton("Cancel", onDismiss) }
     ) {
-        DatePicker(state = state)
+        DatePicker(state)
     }
 }
 

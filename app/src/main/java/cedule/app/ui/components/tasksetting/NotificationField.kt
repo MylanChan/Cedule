@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -32,7 +33,14 @@ fun NotificationField(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         TaskFieldIcon(isNotify, R.drawable.ic_notification_fill, R.drawable.ic_notification)
-        Text("Notify", Modifier.padding(start = 12.dp, end = 24.dp))
+        Text(
+            "Notify",
+            Modifier.padding(start = 12.dp, end = 24.dp),
+            if (isNotify)
+                MaterialTheme.colorScheme.onSurface
+            else
+                MaterialTheme.colorScheme.outline
+        )
 
         if (isNotify)
             Text("on time", Modifier.weight(1f), textAlign = TextAlign.End)

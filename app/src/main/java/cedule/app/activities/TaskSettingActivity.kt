@@ -1,72 +1,79 @@
 package cedule.app.activities;
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import cedule.app.ui.components.tasksetting.AutoCompleteTextField
 import cedule.app.ui.components.tasksetting.DateField
 import cedule.app.ui.components.tasksetting.NotificationField
+import cedule.app.ui.components.tasksetting.TaskNameField
 import cedule.app.ui.components.tasksetting.TaskNoteSection
 import cedule.app.ui.components.tasksetting.TimeField
 import cedule.app.ui.theme.CeduleTheme
+import cedule.app.viewmodels.CategoryViewModel
 import cedule.app.viewmodels.TaskEditViewModel
 import cedule.app.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.Calendar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class TaskSettingActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -77,30 +84,7 @@ class TaskSettingActivity : ComponentActivity() {
 
             CeduleTheme {
                 Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = { Text("Task", textAlign = TextAlign.Center) },
-                            Modifier.padding(horizontal = 12.dp),
-                            navigationIcon = {
-                                val context = LocalContext.current
-                                IconButton(
-                                    onClick = {
-                                            editVM.saveTask {
-                                                taskVM.saveTask(context, it)
-                                            }
-                                        finish()
-                                    },
-                                    Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        rememberVectorPainter(Icons.Filled.KeyboardArrowLeft),
-                                        "Close this page"
-                                    )
-                                }
-
-                            }
-                        )
-                    }
+                    bottomBar = { BottomBar() }
                 ) { innerPadding ->
 
                     LaunchedEffect(Unit) {
@@ -109,7 +93,11 @@ class TaskSettingActivity : ComponentActivity() {
                         }
                     }
 
-                    Column(Modifier.padding(innerPadding)) {
+                    Column(
+                        Modifier
+                            .padding(innerPadding)
+                            .padding(top=48.dp)
+                    ) {
                         TaskSettingScreen()
                     }
                 }
@@ -140,24 +128,7 @@ fun TaskSettingScreen() {
                 onCheckedChange = { editVM.isDone = if (it) 1 else 0 }
             )
 
-            val textValue by remember { derivedStateOf { editVM.title } }
-
-            BasicTextField(
-                textValue,
-                onValueChange = { newValue -> editVM.title = newValue },
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1.2f)
-                    .padding(end = 8.dp),
-                singleLine = true,
-                textStyle = TextStyle(color = Color.Black),
-                decorationBox = { innerTextField ->
-                    innerTextField()
-
-                    if (textValue.isEmpty())
-                        Text("Untitled Task", color=MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            )
+            TaskNameField(Modifier.weight(1.2f))
             AutoCompleteTextField(Modifier.weight(1f))
         }
 
@@ -190,6 +161,7 @@ fun ClearIconButton(
     }
 }
 
+
 @Composable
 fun TaskFieldIcon(
     isActive: Boolean,
@@ -207,4 +179,142 @@ fun TaskFieldIcon(
             else
                 MaterialTheme.colorScheme.outline
     )
+}
+
+@Composable
+fun ColorSelectionDialog(onDismiss: () -> Unit, onSelect: (Long) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Select a color for category") },
+        text = {
+            Column {
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceEvenly) {
+                    ColorButton(0xFF7BCCF6, onClick = onSelect)
+                    ColorButton(0xFF03D9C5, onClick = onSelect)
+                    ColorButton(0xFFFDF7DC, onClick = onSelect)
+                    ColorButton(0xFFADA5CD, onClick = onSelect)
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
+fun ColorButton(color: Long, onClick: (Long) -> Unit) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .background(Color(color), CircleShape)
+            .clip(CircleShape)
+            .clickable { onClick(color) },
+    )
+}
+
+@Composable
+private fun BottomBar(modifier: Modifier = Modifier) {
+    val taskVM: TaskViewModel = hiltViewModel()
+    val editVM: TaskEditViewModel = hiltViewModel()
+    val categoryVM: CategoryViewModel = hiltViewModel()
+
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
+    val activity = LocalContext.current as Activity
+
+    var isDialogShowed by remember { mutableStateOf(false) }
+
+    if (isDialogShowed) {
+        PermissionDialog(onDismiss = { isDialogShowed = false }) {
+            val intent = Intent("android.settings.APP_NOTIFICATION_SETTINGS").apply {
+                putExtra("android.provider.extra.APP_PACKAGE", activity.packageName)
+            }
+            activity.startActivity(intent)
+        }
+    }
+
+    BottomAppBar(
+        modifier
+            .navigationBarsPadding()
+            .height(65.dp)
+            .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
+        backgroundColor = MaterialTheme.colorScheme.surfaceBright,
+        cutoutShape = CircleShape,
+        elevation = 22.dp
+    ) {
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickable { activity.finish() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Cancel")
+        }
+
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .width(1.dp)
+                .padding(vertical = 12.dp)
+                .background(MaterialTheme.colorScheme.outline)
+        )
+
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickable {
+                    editVM.saveTask {
+                        if (editVM.isNotify == 1 && !checkNotificationPermission(activity)) {
+                            isDialogShowed = true
+                            return@saveTask
+                        }
+
+                        if (editVM.categoryName.isNotBlank()) {
+                            categoryVM.saveCategory(editVM.categoryName, editVM.categoryColor)
+
+                            coroutineScope.launch {
+                                categoryVM.getByName(editVM.categoryName).collect { category ->
+                                    it.category = category?.id
+                                    taskVM.saveTask(activity, it)
+                                }
+                            }
+                        } else
+                            taskVM.saveTask(activity, it)
+
+                        activity.finish()
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Save")
+        }
+    }
+}
+
+@Composable
+fun PermissionDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Require permission") },
+        text = { Text("to ensure you are notified on time") },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(); onDismiss() }) {
+                Text("Grant")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+private fun checkNotificationPermission(context: Context): Boolean {
+    val p = ContextCompat.checkSelfPermission(context, "android.permission.POST_NOTIFICATIONS")
+    return p == PackageManager.PERMISSION_GRANTED
 }
