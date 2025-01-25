@@ -30,10 +30,6 @@
             android:exported="false"
             android:theme="@style/Theme.Cedule" />
         <activity
-            android:name=".activities.FocusActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Cedule" />
-        <activity
             android:name=".activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Cedule">
