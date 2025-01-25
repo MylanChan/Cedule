@@ -12,6 +12,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -34,20 +36,22 @@ class TaskViewModel @Inject constructor(private val db: Database) : ViewModel() 
     var todayTaskCount = db.tasksDAO().countTasks(TimeUtils.getTodayMidnight())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val tasks = _selectedDate.flatMapLatest { date ->
-        val taskList = when (date == null) {
-            true -> db.tasksDAO().getAll()
-            false -> db.tasksDAO().getByDate(date)
+    val tasks: StateFlow<List<Task>> = combine(_selectedDate, orderType) { date, order ->
+        val taskFlow = when (date) {
+            null -> db.tasksDAO().getAll()
+            else -> db.tasksDAO().getByDate(date)
         }
 
-        taskList.map { items ->
-            when (orderType.value) {
+        taskFlow.map { items ->
+            when (order) {
                 Sort.SORT_BY_DEFAULT -> items
                 Sort.SORT_BY_NAME_ASC -> items.sortedBy { it.title }
                 Sort.SORT_BY_NAME_DESC -> items.sortedByDescending { it.title }
                 Sort.SORT_BY_DEADLINE -> items.sortedBy { it.startTime }
             }
         }
+    }.flatMapLatest { sortedTasksFlow ->
+        sortedTasksFlow
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
