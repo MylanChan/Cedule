@@ -69,6 +69,7 @@ dependencies {
 
     implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
     implementation 'androidx.compose.material:material:1.8.0-alpha08'
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
     implementation 'androidx.activity:activity-compose:1.9.2'

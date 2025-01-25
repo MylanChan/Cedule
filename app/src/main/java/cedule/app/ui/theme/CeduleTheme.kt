@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun CeduleTheme(content: @Composable () -> Unit) {
@@ -13,8 +14,8 @@ fun CeduleTheme(content: @Composable () -> Unit) {
         false -> lightColorScheme()
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setNavigationBarColor(colorScheme.surfaceBright)
+
+    MaterialTheme(colorScheme, content = content)
 }
