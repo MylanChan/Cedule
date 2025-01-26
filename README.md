@@ -22,3 +22,6 @@ Cedule is a task management application designed for Android devices. This proje
 ## Showcase
 
 [![](https://img.youtube.com/vi/NkjvLTTk-G4/maxresdefault.jpg)](https://youtube.com/shorts/NkjvLTTk-G4)
+
+## Acknowledgment
+- App Logo: [Magic Studio](https://magicstudio.com/)
