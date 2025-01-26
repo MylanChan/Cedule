@@ -69,6 +69,7 @@ import cedule.app.viewmodels.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 
 
@@ -267,26 +268,27 @@ private fun BottomBar(modifier: Modifier = Modifier) {
                 .fillMaxHeight()
                 .weight(1f)
                 .clickable {
-                    editVM.saveTask {
-                        if (editVM.isNotify == 1 && !checkNotificationPermission(activity)) {
-                            isDialogShowed = true
-                            return@saveTask
-                        }
-
-                        if (editVM.categoryName.isNotBlank()) {
-                            categoryVM.saveCategory(editVM.categoryName, editVM.categoryColor)
-
-                            coroutineScope.launch {
-                                categoryVM.getByName(editVM.categoryName).collect { category ->
-                                    it.category = category?.id
-                                    taskVM.saveTask(activity, it)
-                                }
-                            }
-                        } else
-                            taskVM.saveTask(activity, it)
-
-                        activity.finish()
+                    if (editVM.isNotify == 1 && !checkNotificationPermission(activity)) {
+                        isDialogShowed = true
+                        return@clickable
                     }
+
+                    if (editVM.categoryName.isNotBlank()) {
+                        categoryVM.saveCategory(editVM.categoryName, editVM.categoryColor)
+
+                        coroutineScope.launch {
+                            categoryVM.getByName(editVM.categoryName)
+                                .take(1)
+                                .collect { category ->
+                                    editVM.category = category?.id
+                                    editVM.saveTask { taskVM.saveTask(activity, it) }
+                                }
+                        }
+                    }
+                    else
+                        editVM.saveTask { taskVM.saveTask(activity, it) }
+
+                    activity.finish()
                 },
             contentAlignment = Alignment.Center
         ) {
