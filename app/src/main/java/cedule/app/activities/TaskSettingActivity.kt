@@ -66,6 +66,7 @@ import cedule.app.ui.theme.CeduleTheme
 import cedule.app.viewmodels.CategoryViewModel
 import cedule.app.viewmodels.TaskEditViewModel
 import cedule.app.viewmodels.TaskViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,9 +85,10 @@ class TaskSettingActivity : ComponentActivity() {
             val editVM: TaskEditViewModel = hiltViewModel()
 
             CeduleTheme {
-                Scaffold(
-                    bottomBar = { BottomBar() }
-                ) { innerPadding ->
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.surface)
+
+                Scaffold(bottomBar = { BottomBar() }) { innerPadding ->
 
                     LaunchedEffect(Unit) {
                         taskVM.getTask(taskId).collect {
@@ -225,6 +227,9 @@ private fun BottomBar(modifier: Modifier = Modifier) {
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     val activity = LocalContext.current as Activity
 
+    val sysUiController = rememberSystemUiController()
+    sysUiController.setNavigationBarColor(MaterialTheme.colorScheme.surfaceContainer)
+
     var isDialogShowed by remember { mutableStateOf(false) }
 
     if (isDialogShowed) {
@@ -241,7 +246,7 @@ private fun BottomBar(modifier: Modifier = Modifier) {
             .navigationBarsPadding()
             .height(65.dp)
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
-        backgroundColor = MaterialTheme.colorScheme.surfaceBright,
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
         cutoutShape = CircleShape,
         elevation = 22.dp
     ) {

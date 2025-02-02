@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +37,7 @@ import cedule.app.ui.components.IconBox
 import cedule.app.ui.components.page.FocusPage
 import cedule.app.ui.components.page.HomePage
 import cedule.app.ui.theme.CeduleTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -51,6 +53,9 @@ class MainActivity : ComponentActivity() {
             )
             val navController = rememberNavController()
             CeduleTheme {
+                val sysUiController = rememberSystemUiController()
+                sysUiController.setNavigationBarColor(MaterialTheme.colorScheme.surfaceContainer)
+
                 Column {
                     NavHost(
                         navController,
@@ -93,7 +98,7 @@ fun NavBar(
             .navigationBarsPadding()
             .height(65.dp)
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
-        backgroundColor = MaterialTheme.colorScheme.surfaceBright,
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
         cutoutShape = CircleShape,
         elevation = 22.dp
     ) {

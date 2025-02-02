@@ -34,11 +34,15 @@ import cedule.app.ui.components.TaskEntry
 import cedule.app.ui.components.Toolbar
 import cedule.app.utils.TimeUtils
 import cedule.app.viewmodels.TaskViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun HomePage(navController: NavController, modifier: Modifier = Modifier) {
+    val sysUiController = rememberSystemUiController()
+    sysUiController.setStatusBarColor(MaterialTheme.colorScheme.surface)
+
     Scaffold(
         floatingActionButton = { CreateTaskFAB() },
         isFloatingActionButtonDocked = true,

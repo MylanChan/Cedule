@@ -14,8 +14,5 @@ fun CeduleTheme(content: @Composable () -> Unit) {
         false -> lightColorScheme()
     }
 
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setNavigationBarColor(colorScheme.surfaceBright)
-
     MaterialTheme(colorScheme, content = content)
 }

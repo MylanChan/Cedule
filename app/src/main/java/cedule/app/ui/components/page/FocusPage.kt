@@ -44,11 +44,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cedule.app.R
 import cedule.app.activities.NavBar
+import cedule.app.activities.Screen
 import cedule.app.utils.TimeUtils
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
 @Composable
 fun FocusPage(navController: NavController, modifier: Modifier = Modifier) {
+    val sysUiController = rememberSystemUiController()
+    sysUiController.setStatusBarColor(MaterialTheme.colorScheme.surfaceContainer)
+
+
     var isCounting by remember { mutableStateOf(false) }
     var timeCount by remember { mutableIntStateOf(0) }
     LaunchedEffect(isCounting) {
