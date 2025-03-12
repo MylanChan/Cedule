@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -44,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import cedule.app.R
 import cedule.app.activities.NavBar
-import cedule.app.activities.Screen
 import cedule.app.utils.TimeUtils
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
@@ -54,9 +54,9 @@ fun FocusPage(navController: NavController, modifier: Modifier = Modifier) {
     val sysUiController = rememberSystemUiController()
     sysUiController.setStatusBarColor(MaterialTheme.colorScheme.surfaceContainer)
 
-
     var isCounting by remember { mutableStateOf(false) }
     var timeCount by remember { mutableIntStateOf(0) }
+
     LaunchedEffect(isCounting) {
         while (isCounting) {
             delay(1000)
@@ -83,18 +83,19 @@ fun FocusPage(navController: NavController, modifier: Modifier = Modifier) {
         floatingActionButton = {
             val context = LocalContext.current
             StartFocusFAB(isCounting) {
-                if (!isCounting && timeCount == 0) {
-                    val m = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val m = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+                if (isCounting) {
+                    isCounting = false
+                    m.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+                }
+                else {
                     if (!m.isNotificationPolicyAccessGranted)
                         isDialogShowed = true
                     else {
                         m.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
-                        isCounting = !isCounting
+                        isCounting = true
                     }
-                }
-                else {
-                    isCounting = !isCounting
                 }
             }
         },
@@ -200,48 +201,57 @@ fun StartFocusFAB(isCounting: Boolean, modifier: Modifier = Modifier, onClick: (
 }
 
 @Composable
-fun PermissionDialog(
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-) {
-    androidx.compose.material3.AlertDialog(
+fun PermissionDialog(onConfirm: () -> Unit, onCancel: () -> Unit) {
+    AlertDialog(
         onDismissRequest = { onCancel() },
-        title = {
-            Text(
-                "Require permission",
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Text(
-                "to enable Do not disturb mode.",
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = { onConfirm() },
-                colors = ButtonDefaults.buttonColors(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.primary
-                ),
-            ) {
-                Text("Grant")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = { onConfirm() },
-                colors = ButtonDefaults.buttonColors(
-                    Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.primary
-                ),
-                elevation = null
-            ) {
-                Text("Not now")
-            }
-        },
+        title = { PermissionDialogTitle() },
+        text = { PermissionDialogDescription() },
+        confirmButton = { ConfirmButton { onConfirm() } },
+        dismissButton = { DismissButton { onConfirm() } },
     )
+}
+
+@Composable
+private fun PermissionDialogTitle() {
+    Text(
+        "Require permission",
+        color = MaterialTheme.colorScheme.onSurface,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+private fun PermissionDialogDescription() {
+    Text(
+        "to enable Do not disturb mode.",
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+@Composable
+private fun ConfirmButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
+    ) {
+        Text("Confirm")
+    }
+}
+
+@Composable
+private fun DismissButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
+        elevation = null
+    ) {
+        Text("Dismiss")
+    }
 }
