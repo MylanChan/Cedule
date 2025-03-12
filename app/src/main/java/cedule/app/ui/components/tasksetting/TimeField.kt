@@ -28,6 +28,7 @@ import cedule.app.activities.TaskFieldIcon
 import cedule.app.utils.TimeUtils
 import cedule.app.viewmodels.TaskEditViewModel
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun TimeField() {
@@ -85,10 +86,10 @@ fun TimePickerDialog(
     val currentTime = Calendar.getInstance()
 
     time?.let {
-        currentTime.timeInMillis = it * 60 * 1000L
+        currentTime.timeInMillis = TimeUnit.MINUTES.toMillis(time - 8*60L)
     }
 
-    val timePickerState = rememberTimePickerState(
+    val state = rememberTimePickerState(
         initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
         initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
@@ -96,22 +97,29 @@ fun TimePickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("Dismiss")
+        dismissButton = { DismissButton { onDismiss() } },
+        confirmButton = {
+            ConfirmButton {
+                editVM.startTime = state.hour*60 + state.minute
+                onConfirm()
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    editVM.startTime = timePickerState.hour*60 + timePickerState.minute
-                    onConfirm()
-                },
-                content = { Text("OK") }
-            )
-        },
-        text = {
-            TimePicker(timePickerState)
-        }
+        text = { TimePicker(state) }
+    )
+}
+
+@Composable
+private fun ConfirmButton(onConfirm: () -> Unit) {
+    TextButton(
+        onClick = onConfirm,
+        content = { Text("OK") }
+    )
+}
+
+@Composable
+private fun DismissButton(onDismiss: () -> Unit) {
+    TextButton(
+        onClick = onDismiss,
+        content = { Text("Cancel") }
     )
 }
