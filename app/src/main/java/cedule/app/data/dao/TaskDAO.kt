@@ -18,7 +18,7 @@ interface TaskDAO {
     suspend fun update(task: Task)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(task: Task)
+    suspend fun add(task: Task): Long
 
     @Query("SELECT * FROM tasks WHERE id=:id LIMIT 1")
     fun getById(id: Int): Flow<Task>
@@ -33,11 +33,11 @@ interface TaskDAO {
     fun getByDate(startDate: Long): Flow<List<Task>>
 
     @Transaction
-    suspend fun insertOrUpdate(task: Task) {
-        if (task.id != null) update(task) else add(task)
+    suspend fun insertOrUpdate(task: Task): Long {
+        return add(task)
     }
 
-    @Query("SELECT * FROM tasks ORDER BY createTime DESC LIMIT 1")
+    @Query("SELECT * FROM tasks ORDER BY createTime LIMIT 1")
     suspend fun getLatestTask(): Task?
 
     @Query("SELECT COUNT(*) FROM tasks WHERE startDate=:date AND isDone=0")

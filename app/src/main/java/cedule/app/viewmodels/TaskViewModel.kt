@@ -88,13 +88,10 @@ class TaskViewModel @Inject constructor(private val db: Database) : ViewModel() 
 
     fun saveTask(context: Context, task: Task) {
         viewModelScope.launch {
-            db.tasksDAO().insertOrUpdate(task)
+            val id = db.tasksDAO().insertOrUpdate(task)
 
             if (task.isNotify == 1 && (task.startDate != null || task.startTime != null)) {
-                val latestTask = when (task.id == null) {
-                    true -> db.tasksDAO().getLatestTask()!!
-                    else -> task
-                }
+                val latestTask = Task(id.toInt(), startDate=task.startDate, startTime=task.startTime)
                 AlarmUtils.setAlarm(context, latestTask)
             }
         }
