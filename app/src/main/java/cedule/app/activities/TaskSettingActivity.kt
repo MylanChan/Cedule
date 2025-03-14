@@ -127,8 +127,8 @@ fun TaskSettingScreen() {
 
             val isDone by remember { derivedStateOf { editVM.isDone } }
             Checkbox(
-                checked = isDone == 1,
-                onCheckedChange = { editVM.isDone = if (it) 1 else 0 }
+                checked = isDone,
+                onCheckedChange = { editVM.isDone = it }
             )
 
             TaskNameField(Modifier.weight(1.2f))
@@ -273,7 +273,7 @@ private fun BottomBar(modifier: Modifier = Modifier) {
                 .fillMaxHeight()
                 .weight(1f)
                 .clickable {
-                    if (editVM.isNotify == 1 && !checkNotificationPermission(activity)) {
+                    if (editVM.isNotify && !checkNotificationPermission(activity)) {
                         isDialogShowed = true
                         return@clickable
                     }

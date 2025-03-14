@@ -53,7 +53,7 @@ private fun TaskEntryDeadline(deadline: Long?, time: Int?, modifier: Modifier = 
 
 @Composable
 private fun TaskEntryName(task: Task, modifier: Modifier = Modifier) {
-    val decoration = if (task.isDone == 1) TextDecoration.LineThrough else TextDecoration.None
+    val decoration = if (task.isDone) TextDecoration.LineThrough else TextDecoration.None
     Text(
         task.title!!.ifBlank { "Untitled Task" },
         modifier,

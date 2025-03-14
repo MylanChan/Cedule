@@ -38,10 +38,10 @@ data class Task(
     val startTime: Int? = null,
 
     @ColumnInfo(name = "isDone", defaultValue = "0")
-    val isDone: Int? = 0,
+    val isDone: Boolean = false,
 
     @ColumnInfo(name = "isNotify", defaultValue = "0")
-    val isNotify: Int? = null,
+    val isNotify: Boolean = false,
 
     @ColumnInfo(name = "note")
     val note: String? = null

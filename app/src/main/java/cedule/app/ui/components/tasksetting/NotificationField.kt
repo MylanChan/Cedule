@@ -23,12 +23,12 @@ import cedule.app.viewmodels.TaskEditViewModel
 @Composable
 fun NotificationField(modifier: Modifier = Modifier) {
     val editVM = hiltViewModel<TaskEditViewModel>()
-    val isNotify by remember { derivedStateOf { editVM.isNotify == 1 } }
+    val isNotify by remember { derivedStateOf { editVM.isNotify } }
 
     Row(
         modifier
             .fillMaxWidth()
-            .clickable { editVM.isNotify = if (isNotify) 0 else 1 }
+            .clickable { editVM.isNotify = !isNotify }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
